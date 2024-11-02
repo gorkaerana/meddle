@@ -1,3 +1,9 @@
+mdl_command : create_command
+    | recreate_command
+    | drop_command
+    | rename_command
+    | alter_command
+
 create_command : "CREATE" component_type_name component_name "(" attributes? components? ")" ";"?
 
 recreate_command : "RECREATE" component_type_name component_name "(" attributes? components? ")" ";"?

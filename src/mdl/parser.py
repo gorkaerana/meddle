@@ -2,7 +2,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Callable, NamedTuple, Self, TypeAlias
 
-from lark import Transformer, Tree
+from lark import Lark, Transformer, Tree
 
 
 class Unreachable(Exception):
@@ -21,12 +21,30 @@ class Attribute(NamedTuple):
     value: AttributeValue | list[AttributeValue]
     command: str | None = None
 
+    @classmethod
+    def loads(self, source: str) -> Attribute:
+        return Lark(
+            grammar=mdl_grammar,
+            start="attribute",
+            parser="lalr",
+            transformer=MdlTreeTransformer(visit_tokens=True),
+        ).parse(source)
+
 
 class Component(NamedTuple):
     __match_args__ = ("component_type_name", "component_name", "attributes")
     component_type_name: str
     component_name: str
     attributes: list[Attribute] | None = None
+
+    @classmethod
+    def loads(self, source: str) -> Component:
+        return Lark(
+            grammar=mdl_grammar,
+            start="component",
+            parser="lalr",
+            transformer=MdlTreeTransformer(visit_tokens=True),
+        ).parse(source)
 
 
 class Command(NamedTuple):
@@ -46,6 +64,15 @@ class Command(NamedTuple):
     components: list[Component] | None = None
     commands: list[Command] | None = None
     to_component_name: str | None = None
+
+    @classmethod
+    def loads(self, source: str) -> Component:
+        return Lark(
+            grammar=mdl_grammar,
+            start="mdl_command",
+            parser="lalr",
+            transformer=MdlTreeTransformer(visit_tokens=True),
+        ).parse(source)
 
 
 def generic_command(
@@ -183,4 +210,7 @@ class MdlTreeTransformer(Transformer):
         return children
 
     def alter_subcommand(self, children) -> Command:
+        return children[0]
+
+    def mdl_command(self, children) -> Command:
         return children[0]

@@ -1,6 +1,7 @@
 # TODO: note that "ADD" and "MODIFY" commands in the Veeva MDL documentation
 # example have wrong ending delimiter comma instead of semicolon
 # TODO: test 'alter_subcommand' and 'alter_subcommands' rules
+# TODO: test all grammar rules
 from pathlib import Path
 
 from lark import Lark
@@ -139,6 +140,16 @@ def modify_command_parser(mdl_grammar):
     return Lark(
         grammar=mdl_grammar,
         start="modify_command",
+        parser="lalr",
+        transformer=MdlTreeTransformer(visit_tokens=True),
+    )
+
+
+@pytest.fixture
+def mdl_command_parser(mdl_grammar):
+    return Lark(
+        grammar=mdl_grammar,
+        start="mdl_command",
         parser="lalr",
         transformer=MdlTreeTransformer(visit_tokens=True),
     )
@@ -668,5 +679,84 @@ def test_modify_command_optional_semicolon_in_the_end(modify_command_parser):
         ],
         components=None,
         commands=None,
+        to_component_name=None,
+    )
+
+
+def test_mdl_command(mdl_command_parser):
+    assert mdl_command_parser.parse("""ALTER Mycomponent my_comp__c (
+  my_bool_attribute(true),
+  my_num_attribute(5),
+  my_multi_value_attribute ADD (5, 6),
+  my_multi_value_attribute DROP (8),
+
+  ADD Mysubcomponent my_subcomp__c (
+    my_bool_attribute(true),
+    my_num_attribute(5)
+  );
+  DROP Mysubcomponent my_subcomp2__c;
+
+MODIFY Mysubcomponent my_subcomp3__c (
+    my_bool_attribute(true),
+    my_num_attribute(7)
+  );
+
+  RENAME Mysubcomponent my_subcomp4__c TO my_subcomp5__c;
+);
+""") == Command(
+        command="ALTER",
+        component_type_name="Mycomponent",
+        component_name="my_comp__c",
+        attributes=[
+            Attribute(name="my_bool_attribute", value=True, command=None),
+            Attribute(name="my_num_attribute", value=5, command=None),
+            Attribute(name="my_multi_value_attribute", value=[5, 6], command="ADD"),
+            Attribute(name="my_multi_value_attribute", value=8, command="DROP"),
+        ],
+        components=None,
+        commands=[
+            Command(
+                command="ADD",
+                component_type_name="Mysubcomponent",
+                component_name="my_subcomp__c",
+                attributes=[
+                    Attribute(name="my_bool_attribute", value=True, command=None),
+                    Attribute(name="my_num_attribute", value=5, command=None),
+                ],
+                components=None,
+                commands=None,
+                to_component_name=None,
+            ),
+            Command(
+                command="DROP",
+                component_type_name="Mysubcomponent",
+                component_name="my_subcomp2__c",
+                attributes=None,
+                components=None,
+                commands=None,
+                to_component_name=None,
+            ),
+            Command(
+                command="MODIFY",
+                component_type_name="Mysubcomponent",
+                component_name="my_subcomp3__c",
+                attributes=[
+                    Attribute(name="my_bool_attribute", value=True, command=None),
+                    Attribute(name="my_num_attribute", value=7, command=None),
+                ],
+                components=None,
+                commands=None,
+                to_component_name=None,
+            ),
+            Command(
+                command="RENAME",
+                component_type_name="Mysubcomponent",
+                component_name="my_subcomp4__c",
+                attributes=None,
+                components=None,
+                commands=None,
+                to_component_name="my_subcomp5__c",
+            ),
+        ],
         to_component_name=None,
     )
