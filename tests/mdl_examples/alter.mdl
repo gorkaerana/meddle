@@ -1,0 +1,20 @@
+ALTER Mycomponent my_comp__c (
+  my_bool_attribute(true),
+  my_num_attribute(5),
+  my_multi_value_attribute ADD (5, 6),
+  my_multi_value_attribute DROP (8),
+
+  ADD Mysubcomponent my_subcomp__c (
+    my_bool_attribute(true),
+    my_num_attribute(5)
+  );
+
+  DROP Mysubcomponent my_subcomp2__c;
+
+MODIFY Mysubcomponent my_subcomp3__c (
+    my_bool_attribute(true),
+    my_num_attribute(7)
+  );
+
+  RENAME Mysubcomponent my_subcomp4__c TO my_subcomp5__c;
+);

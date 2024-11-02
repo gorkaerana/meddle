@@ -1,0 +1,1 @@
+RENAME Mycomponent my_comp__c TO my_new_comp__c;

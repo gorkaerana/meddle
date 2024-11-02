@@ -1,0 +1,9 @@
+RECREATE Mycomponent my_comp__c (
+  my_bool_attribute(true),
+  my_num_attribute(5),
+
+  Mysubcomponent my_subcomp__c (
+    my_bool_attribute(true),
+    my_num_attribute(5)
+  )
+);
