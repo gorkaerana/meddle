@@ -1,0 +1,63 @@
+create_command : "CREATE" component_type_name component_name "(" attributes? components? ")" ";"?
+
+recreate_command : "RECREATE" component_type_name component_name "(" attributes? components? ")" ";"?
+
+drop_command : "DROP" component_type_name component_name ";"?
+
+rename_command : "RENAME" component_type_name component_name "TO" component_name ";"?
+
+alter_command : "ALTER" component_type_name component_name "(" alter_attributes? components? alter_subcommands?")" ";"?
+
+alter_subcommands : alter_subcommand (";"? alter_subcommand)* ";"?
+
+alter_subcommand : drop_command
+    | modify_command
+    | rename_command
+    | add_command
+
+// "ADD" and "MODIFY" commands can only go inside an "ALTER" command
+add_command : "ADD" component_type_name component_name "(" attributes? components? ")" ";"?
+
+modify_command : "MODIFY" component_type_name component_name "(" attributes? components? ")" ";"?
+
+components : component (";" component)* ";"?
+
+component : component_type_name component_name "(" attributes ")"
+
+component_type_name : /[A-Z][a-z]+/
+
+component_name : /[a-z0-9_]+/
+
+attributes : attribute ("," attribute)* ","?
+
+alter_attributes : alter_attribute ("," alter_attribute)* ","?
+
+alter_attribute : attribute_name (add | drop)? "(" attribute_value ")"
+
+add : "ADD"
+
+drop : "DROP"
+
+attribute : attribute_name "(" attribute_value ")"
+
+attribute_name : /[a-z_]+/
+
+attribute_value : value ("," value)*
+
+value : boolean
+    | string
+    | number
+
+string : "'" WORD (WS_INLINE WORD)* "'"
+number : INT | DECIMAL
+boolean : true | false
+
+true : "true"
+false : "false"
+
+%import common.WORD
+%import common.INT
+%import common.DECIMAL
+%import common.WS
+%import common.WS_INLINE
+%ignore WS

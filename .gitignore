@@ -1,0 +1,15 @@
+# python generated files
+__pycache__/
+.*_cache/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# venv
+.venv
+
+# Emacs files
+*~
+\#*
