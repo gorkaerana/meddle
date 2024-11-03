@@ -13,6 +13,15 @@ class Unreachable(Exception):
 mdl_grammar = (Path(__file__).parent / "mdl_grammar.lark").read_text()
 
 
+def get_parser(start: str) -> Lark:
+    return Lark(
+        grammar=mdl_grammar,
+        start=start,
+        parser="lalr",
+        transformer=MdlTreeTransformer(visit_tokens=True),
+    )
+
+
 AttributeValue: TypeAlias = bool | int | float | str
 
 
@@ -23,12 +32,7 @@ class Attribute(Struct):
 
     @classmethod
     def loads(self, source: str) -> Attribute:
-        return Lark(
-            grammar=mdl_grammar,
-            start="attribute",
-            parser="lalr",
-            transformer=MdlTreeTransformer(visit_tokens=True),
-        ).parse(source)
+        return get_parser("attribute").parse(source)
 
 
 class Component(Struct):
@@ -38,12 +42,7 @@ class Component(Struct):
 
     @classmethod
     def loads(self, source: str) -> Component:
-        return Lark(
-            grammar=mdl_grammar,
-            start="component",
-            parser="lalr",
-            transformer=MdlTreeTransformer(visit_tokens=True),
-        ).parse(source)
+        return get_parser("component").parse(source)
 
 
 class Command(Struct):
@@ -57,12 +56,7 @@ class Command(Struct):
 
     @classmethod
     def loads(self, source: str) -> Component:
-        return Lark(
-            grammar=mdl_grammar,
-            start="mdl_command",
-            parser="lalr",
-            transformer=MdlTreeTransformer(visit_tokens=True),
-        ).parse(source)
+        return get_parser("mdl_command").parse(source)
 
 
 def generic_command(
