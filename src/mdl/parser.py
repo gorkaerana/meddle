@@ -1,9 +1,12 @@
 from __future__ import annotations
 from pathlib import Path
-from typing import Callable, Self, TypeAlias
+from typing import Callable, Generator, Self, TypeAlias
 
 from lark import Lark, Transformer, Tree
 from msgspec import Struct
+
+
+INDENT = " " * 4
 
 
 class Unreachable(Exception):
@@ -34,6 +37,23 @@ class Attribute(Struct):
     def loads(self, source: str) -> Attribute:
         return get_parser("attribute").parse(source)
 
+    def __lines__(self, indent_level: int = 0) -> Generator[str]:
+        yield (INDENT * indent_level)
+        yield self.name
+        if self.command is not None:
+            yield " "
+            yield self.command.upper()
+            yield " "
+        yield "("
+        if isinstance(self.value, bool):
+            yield str(self.value).lower()
+        else:
+            yield repr(self.value)
+        yield ")"
+
+    def dumps(self):
+        return "".join(self.__lines__())
+
 
 class Component(Struct):
     component_type_name: str
@@ -43,6 +63,15 @@ class Component(Struct):
     @classmethod
     def loads(self, source: str) -> Component:
         return get_parser("component").parse(source)
+
+    def __lines__(self, indent_level: int = 0):
+        yield f"{self.component_type_name} {self.component_name} ("
+        for a in self.attributes:
+            yield f"{INDENT*indent_level}{''.join(a.__lines__(indent_level + 1))}"
+        yield ")"
+
+    def dumps(self):
+        return "\n".join(self.__lines__())
 
 
 class Command(Struct):
@@ -57,6 +86,51 @@ class Command(Struct):
     @classmethod
     def loads(self, source: str) -> Component:
         return get_parser("mdl_command").parse(source)
+
+    def __lines__(self, indent_level: int = 0):
+        if self.command.lower() == "drop":
+            yield (
+                f"{INDENT * indent_level}"
+                f"{self.command.upper()} "
+                f"{self.component_type_name} "
+                f"{self.component_name};"
+            )
+        elif self.command.lower() == "rename":
+            yield (
+                f"{INDENT * indent_level}"
+                f"{self.command.upper()} "
+                f"{self.component_type_name} "
+                f"{self.component_name} "
+                "TO "
+                f"{self.to_component_name};"
+            )
+        else:
+            yield (
+                f"{INDENT * indent_level}"
+                f"{self.command.upper()} "
+                f"{self.component_type_name} "
+                f"{self.component_name} "
+                "("
+            )
+            for a in self.attributes or []:
+                yield (
+                    # f"{INDENT * indent_level}"
+                    f"{''.join(a.__lines__(indent_level + 1))},"
+                )
+            for comp in self.components or []:
+                yield (
+                    # f"{INDENT * indent_level}"
+                    f"{'\n'.join(comp.__lines__(indent_level + 1))}"
+                )
+            for com in self.commands or []:
+                yield (
+                    f"{INDENT * indent_level}"
+                    f"{'\n'.join(com.__lines__(indent_level + 1))}"
+                )
+            yield f"{INDENT * indent_level});"
+
+    def dumps(self):
+        return "\n".join(self.__lines__())
 
 
 def generic_command(
@@ -198,3 +272,26 @@ class MdlTreeTransformer(Transformer):
 
     def mdl_command(self, children) -> Command:
         return children[0]
+
+
+print(
+    Command.loads("""ALTER Mycomponent my_comp__c (
+  my_bool_attribute(true),
+  my_num_attribute(5),
+  my_multi_value_attribute ADD (5, 6),
+  my_multi_value_attribute DROP (8),
+
+  ADD Mysubcomponent my_subcomp__c (
+    my_bool_attribute(true),
+    my_num_attribute(5)
+  );
+  DROP Mysubcomponent my_subcomp2__c;
+
+MODIFY Mysubcomponent my_subcomp3__c (
+    my_bool_attribute(true),
+    my_num_attribute(7)
+  );
+
+  RENAME Mysubcomponent my_subcomp4__c TO my_subcomp5__c;
+);""").dumps()
+)
