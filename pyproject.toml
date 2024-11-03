@@ -7,6 +7,7 @@ authors = [
 ]
 dependencies = [
     "lark>=1.1.9",
+    "msgspec>=0.18.6",
     "rply>=0.7.8",
     "ruff>=0.7.1",
 ]

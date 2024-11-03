@@ -1,8 +1,9 @@
 from __future__ import annotations
 from pathlib import Path
-from typing import Callable, NamedTuple, Self, TypeAlias
+from typing import Callable, Self, TypeAlias
 
 from lark import Lark, Transformer, Tree
+from msgspec import Struct
 
 
 class Unreachable(Exception):
@@ -15,8 +16,7 @@ mdl_grammar = (Path(__file__).parent / "mdl_grammar.lark").read_text()
 AttributeValue: TypeAlias = bool | int | float | str
 
 
-class Attribute(NamedTuple):
-    __match_args__ = ("name", "value", "command")
+class Attribute(Struct):
     name: str
     value: AttributeValue | list[AttributeValue]
     command: str | None = None
@@ -31,8 +31,7 @@ class Attribute(NamedTuple):
         ).parse(source)
 
 
-class Component(NamedTuple):
-    __match_args__ = ("component_type_name", "component_name", "attributes")
+class Component(Struct):
     component_type_name: str
     component_name: str
     attributes: list[Attribute] | None = None
@@ -47,16 +46,7 @@ class Component(NamedTuple):
         ).parse(source)
 
 
-class Command(NamedTuple):
-    __match_args__ = (
-        "command",
-        "component_type_name",
-        "component_name",
-        "attributes",
-        "components",
-        "commands",
-        "to_component_name",
-    )
+class Command(Struct):
     command: str
     component_type_name: str
     component_name: str
