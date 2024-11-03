@@ -1,11 +1,10 @@
-# TODO: note that "ADD" and "MODIFY" commands in the Veeva MDL documentation
-# example have wrong ending delimiter comma instead of semicolon
 # TODO: test 'alter_subcommand' and 'alter_subcommands' rules
 # TODO: test all grammar rules
 from pathlib import Path
 
 from lark import Lark
 import pytest
+import msgspec
 
 from mdl.parser import MdlTreeTransformer, Attribute, Component, Command
 
@@ -86,6 +85,16 @@ def create_command_parser(mdl_grammar):
 
 
 @pytest.fixture
+def create_command_mdl(here):
+    return (here / "mdl_examples" / "create.mdl").read_text()
+
+
+@pytest.fixture
+def create_command_json(here):
+    return (here / "mdl_examples" / "create.json").read_text()
+
+
+@pytest.fixture
 def recreate_command_parser(mdl_grammar):
     return Lark(
         grammar=mdl_grammar,
@@ -93,6 +102,16 @@ def recreate_command_parser(mdl_grammar):
         parser="lalr",
         transformer=MdlTreeTransformer(visit_tokens=True),
     )
+
+
+@pytest.fixture
+def recreate_command_mdl(here):
+    return (here / "mdl_examples" / "recreate.mdl").read_text()
+
+
+@pytest.fixture
+def recreate_command_json(here):
+    return (here / "mdl_examples" / "recreate.json").read_text()
 
 
 @pytest.fixture
@@ -106,6 +125,16 @@ def drop_command_parser(mdl_grammar):
 
 
 @pytest.fixture
+def drop_command_mdl(here):
+    return (here / "mdl_examples" / "drop.mdl").read_text()
+
+
+@pytest.fixture
+def drop_command_json(here):
+    return (here / "mdl_examples" / "drop.json").read_text()
+
+
+@pytest.fixture
 def rename_command_parser(mdl_grammar):
     return Lark(
         grammar=mdl_grammar,
@@ -113,6 +142,16 @@ def rename_command_parser(mdl_grammar):
         parser="lalr",
         transformer=MdlTreeTransformer(visit_tokens=True),
     )
+
+
+@pytest.fixture
+def rename_command_mdl(here):
+    return (here / "mdl_examples" / "rename.mdl").read_text()
+
+
+@pytest.fixture
+def rename_command_json(here):
+    return (here / "mdl_examples" / "rename.json").read_text()
 
 
 @pytest.fixture
@@ -126,6 +165,16 @@ def alter_command_parser(mdl_grammar):
 
 
 @pytest.fixture
+def alter_command_mdl(here):
+    return (here / "mdl_examples" / "alter.mdl").read_text()
+
+
+@pytest.fixture
+def alter_command_json(here):
+    return (here / "mdl_examples" / "alter.json").read_text()
+
+
+@pytest.fixture
 def add_command_parser(mdl_grammar):
     return Lark(
         grammar=mdl_grammar,
@@ -136,6 +185,16 @@ def add_command_parser(mdl_grammar):
 
 
 @pytest.fixture
+def add_command_mdl(here):
+    return (here / "mdl_examples" / "add.mdl").read_text()
+
+
+@pytest.fixture
+def add_command_json(here):
+    return (here / "mdl_examples" / "add.json").read_text()
+
+
+@pytest.fixture
 def modify_command_parser(mdl_grammar):
     return Lark(
         grammar=mdl_grammar,
@@ -143,6 +202,16 @@ def modify_command_parser(mdl_grammar):
         parser="lalr",
         transformer=MdlTreeTransformer(visit_tokens=True),
     )
+
+
+@pytest.fixture
+def modify_command_mdl(here):
+    return (here / "mdl_examples" / "modify.mdl").read_text()
+
+
+@pytest.fixture
+def modify_command_json(here):
+    return (here / "mdl_examples" / "modify.json").read_text()
 
 
 @pytest.fixture
@@ -273,490 +342,117 @@ def test_components_optional_semicolon_in_the_end(components_parser):
     ]
 
 
-def test_create_command(create_command_parser):
-    assert create_command_parser.parse("""CREATE Mycomponent my_comp__c (
-  my_bool_attribute(true),
-  my_num_attribute(5),
+def test_create_command(create_command_parser, create_command_mdl, create_command_json):
+    assert create_command_parser.parse(
+        create_command_mdl.removesuffix(";")
+    ) == msgspec.json.decode(create_command_json, type=Command)
 
-  Mysubcomponent my_subcomp__c (
-    my_bool_attribute(true),
-    my_num_attribute(5)
-  )
-)""") == Command(
-        command="CREATE",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=5, command=None),
-        ],
-        components=[
-            Component(
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp__c",
-                attributes=[
-                    Attribute(name="my_bool_attribute", value=True, command=None),
-                    Attribute(name="my_num_attribute", value=5, command=None),
-                ],
-            )
-        ],
-        commands=None,
-        to_component_name=None,
+
+def test_create_command_optional_semicolon_in_the_end(
+    create_command_parser, create_command_mdl, create_command_json
+):
+    assert create_command_parser.parse(create_command_mdl) == msgspec.json.decode(
+        create_command_json, type=Command
     )
 
 
-def test_create_command_optional_semicolon_in_the_end(create_command_parser):
-    assert create_command_parser.parse("""CREATE Mycomponent my_comp__c (
-  my_bool_attribute(true),
-  my_num_attribute(5),
+def test_recreate_command(
+    recreate_command_parser, recreate_command_mdl, recreate_command_json
+):
+    assert recreate_command_parser.parse(
+        recreate_command_mdl.removesuffix(";")
+    ) == msgspec.json.decode(recreate_command_json, type=Command)
 
-  Mysubcomponent my_subcomp__c (
-    my_bool_attribute(true),
-    my_num_attribute(5)
-  )
-);""") == Command(
-        command="CREATE",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=5, command=None),
-        ],
-        components=[
-            Component(
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp__c",
-                attributes=[
-                    Attribute(name="my_bool_attribute", value=True, command=None),
-                    Attribute(name="my_num_attribute", value=5, command=None),
-                ],
-            )
-        ],
-        commands=None,
-        to_component_name=None,
+
+def test_recreate_command_optional_semicolon_in_the_end(
+    recreate_command_parser, recreate_command_mdl, recreate_command_json
+):
+    assert recreate_command_parser.parse(recreate_command_mdl) == msgspec.json.decode(
+        recreate_command_json, type=Command
     )
 
 
-def test_recreate_command(recreate_command_parser):
-    assert recreate_command_parser.parse("""RECREATE Mycomponent my_comp__c (
-  my_bool_attribute(true),
-  my_num_attribute(5),
+def test_drop_command(drop_command_parser, drop_command_mdl, drop_command_json):
+    assert drop_command_parser.parse(
+        drop_command_mdl.removesuffix(";")
+    ) == msgspec.json.decode(drop_command_json, type=Command)
 
-  Mysubcomponent my_subcomp__c (
-    my_bool_attribute(true),
-    my_num_attribute(5)
-  )
-)""") == Command(
-        command="RECREATE",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=5, command=None),
-        ],
-        components=[
-            Component(
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp__c",
-                attributes=[
-                    Attribute(name="my_bool_attribute", value=True, command=None),
-                    Attribute(name="my_num_attribute", value=5, command=None),
-                ],
-            )
-        ],
-        commands=None,
-        to_component_name=None,
+
+def test_drop_command_optional_semicolon_in_the_end(
+    drop_command_parser, drop_command_mdl, drop_command_json
+):
+    assert drop_command_parser.parse(drop_command_mdl) == msgspec.json.decode(
+        drop_command_json, type=Command
     )
 
 
-def test_recreate_command_optional_semicolon_in_the_end(recreate_command_parser):
-    assert recreate_command_parser.parse("""RECREATE Mycomponent my_comp__c (
-  my_bool_attribute(true),
-  my_num_attribute(5),
-
-  Mysubcomponent my_subcomp__c (
-    my_bool_attribute(true),
-    my_num_attribute(5)
-  )
-);""") == Command(
-        command="RECREATE",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=5, command=None),
-        ],
-        components=[
-            Component(
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp__c",
-                attributes=[
-                    Attribute(name="my_bool_attribute", value=True, command=None),
-                    Attribute(name="my_num_attribute", value=5, command=None),
-                ],
-            )
-        ],
-        commands=None,
-        to_component_name=None,
-    )
-
-
-def test_drop_command(drop_command_parser):
-    assert drop_command_parser.parse("DROP Mycomponent my_comp__c") == Command(
-        command="DROP",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=None,
-        components=None,
-        commands=None,
-        to_component_name=None,
-    )
-
-
-def test_drop_command_optional_semicolon_in_the_end(drop_command_parser):
-    assert drop_command_parser.parse("DROP Mycomponent my_comp__c;") == Command(
-        command="DROP",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=None,
-        components=None,
-        commands=None,
-        to_component_name=None,
-    )
-
-
-def test_rename_command(rename_command_parser):
+def test_rename_command(rename_command_parser, rename_command_mdl, rename_command_json):
     assert rename_command_parser.parse(
-        "RENAME Mycomponent my_comp__c TO my_new_comp__c"
-    ) == Command(
-        command="RENAME",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=None,
-        components=None,
-        commands=None,
-        to_component_name="my_new_comp__c",
+        rename_command_mdl.removesuffix(";")
+    ) == msgspec.json.decode(rename_command_json, type=Command)
+
+
+def test_rename_command_optional_semicolon_in_the_end(
+    rename_command_parser, rename_command_mdl, rename_command_json
+):
+    assert rename_command_parser.parse(rename_command_mdl) == msgspec.json.decode(
+        rename_command_json, type=Command
     )
 
 
-def test_rename_command_optional_semicolon_in_the_end(rename_command_parser):
-    assert rename_command_parser.parse(
-        "RENAME Mycomponent my_comp__c TO my_new_comp__c;"
-    ) == Command(
-        command="RENAME",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=None,
-        components=None,
-        commands=None,
-        to_component_name="my_new_comp__c",
+def test_alter_command(alter_command_parser, alter_command_mdl, alter_command_json):
+    assert alter_command_parser.parse(
+        alter_command_mdl.removesuffix(";")
+    ) == msgspec.json.decode(alter_command_json, type=Command)
+
+
+def test_alter_command_optional_semicolon_in_the_end(
+    alter_command_parser, alter_command_mdl, alter_command_json
+):
+    assert alter_command_parser.parse(alter_command_mdl) == msgspec.json.decode(
+        alter_command_json, type=Command
     )
 
 
-def test_alter_command(alter_command_parser):
-    assert alter_command_parser.parse("""ALTER Mycomponent my_comp__c (
-  my_bool_attribute(true),
-  my_num_attribute(5),
-  my_multi_value_attribute ADD (5, 6),
-  my_multi_value_attribute DROP (8),
+def test_add_command(add_command_parser, add_command_mdl, add_command_json):
+    assert add_command_parser.parse(
+        add_command_mdl.removesuffix(";")
+    ) == msgspec.json.decode(add_command_json, type=Command)
 
-  ADD Mysubcomponent my_subcomp__c (
-    my_bool_attribute(true),
-    my_num_attribute(5)
-  );
-  DROP Mysubcomponent my_subcomp2__c;
 
-MODIFY Mysubcomponent my_subcomp3__c (
-    my_bool_attribute(true),
-    my_num_attribute(7)
-  );
-
-  RENAME Mysubcomponent my_subcomp4__c TO my_subcomp5__c;
-);
-""") == Command(
-        command="ALTER",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=5, command=None),
-            Attribute(name="my_multi_value_attribute", value=[5, 6], command="ADD"),
-            Attribute(name="my_multi_value_attribute", value=8, command="DROP"),
-        ],
-        components=None,
-        commands=[
-            Command(
-                command="ADD",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp__c",
-                attributes=[
-                    Attribute(name="my_bool_attribute", value=True, command=None),
-                    Attribute(name="my_num_attribute", value=5, command=None),
-                ],
-                components=None,
-                commands=None,
-                to_component_name=None,
-            ),
-            Command(
-                command="DROP",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp2__c",
-                attributes=None,
-                components=None,
-                commands=None,
-                to_component_name=None,
-            ),
-            Command(
-                command="MODIFY",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp3__c",
-                attributes=[
-                    Attribute(name="my_bool_attribute", value=True, command=None),
-                    Attribute(name="my_num_attribute", value=7, command=None),
-                ],
-                components=None,
-                commands=None,
-                to_component_name=None,
-            ),
-            Command(
-                command="RENAME",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp4__c",
-                attributes=None,
-                components=None,
-                commands=None,
-                to_component_name="my_subcomp5__c",
-            ),
-        ],
-        to_component_name=None,
+def test_add_command_optional_semicolon_in_the_end(
+    add_command_parser, add_command_mdl, add_command_json
+):
+    assert add_command_parser.parse(add_command_mdl) == msgspec.json.decode(
+        add_command_json, type=Command
     )
 
 
-def test_alter_command_optional_semicolon_in_the_end(alter_command_parser):
-    assert alter_command_parser.parse("""ALTER Mycomponent my_comp__c (
-  my_bool_attribute(true),
-  my_num_attribute(5),
-  my_multi_value_attribute ADD (5, 6),
-  my_multi_value_attribute DROP (8),
+def test_modify_command(modify_command_parser, modify_command_mdl, modify_command_json):
+    assert modify_command_parser.parse(
+        modify_command_mdl.removesuffix(";")
+    ) == msgspec.json.decode(modify_command_json, type=Command)
 
-  ADD Mysubcomponent my_subcomp__c (
-    my_bool_attribute(true),
-    my_num_attribute(5)
-  );
-  DROP Mysubcomponent my_subcomp2__c;
 
-MODIFY Mysubcomponent my_subcomp3__c (
-    my_bool_attribute(true),
-    my_num_attribute(7)
-  );
-
-  RENAME Mysubcomponent my_subcomp4__c TO my_subcomp5__c;
-);
-""") == Command(
-        command="ALTER",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=5, command=None),
-            Attribute(name="my_multi_value_attribute", value=[5, 6], command="ADD"),
-            Attribute(name="my_multi_value_attribute", value=8, command="DROP"),
-        ],
-        components=None,
-        commands=[
-            Command(
-                command="ADD",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp__c",
-                attributes=[
-                    Attribute(name="my_bool_attribute", value=True, command=None),
-                    Attribute(name="my_num_attribute", value=5, command=None),
-                ],
-                components=None,
-                commands=None,
-                to_component_name=None,
-            ),
-            Command(
-                command="DROP",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp2__c",
-                attributes=None,
-                components=None,
-                commands=None,
-                to_component_name=None,
-            ),
-            Command(
-                command="MODIFY",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp3__c",
-                attributes=[
-                    Attribute(name="my_bool_attribute", value=True, command=None),
-                    Attribute(name="my_num_attribute", value=7, command=None),
-                ],
-                components=None,
-                commands=None,
-                to_component_name=None,
-            ),
-            Command(
-                command="RENAME",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp4__c",
-                attributes=None,
-                components=None,
-                commands=None,
-                to_component_name="my_subcomp5__c",
-            ),
-        ],
-        to_component_name=None,
+def test_modify_command_optional_semicolon_in_the_end(
+    modify_command_parser, modify_command_mdl, modify_command_json
+):
+    assert modify_command_parser.parse(modify_command_mdl) == msgspec.json.decode(
+        modify_command_json, type=Command
     )
 
 
-def test_add_command(add_command_parser):
-    assert add_command_parser.parse("""ADD Mysubcomponent my_subcomp__c (
-    my_bool_attribute(true),
-    my_num_attribute(5)
-  )""") == Command(
-        command="ADD",
-        component_type_name="Mysubcomponent",
-        component_name="my_subcomp__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=5, command=None),
-        ],
-        components=None,
-        commands=None,
-        to_component_name=None,
-    )
-
-
-def test_add_command_optional_semicolon_in_the_end(add_command_parser):
-    assert add_command_parser.parse("""ADD Mysubcomponent my_subcomp__c (
-    my_bool_attribute(true),
-    my_num_attribute(5)
-  );""") == Command(
-        command="ADD",
-        component_type_name="Mysubcomponent",
-        component_name="my_subcomp__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=5, command=None),
-        ],
-        components=None,
-        commands=None,
-        to_component_name=None,
-    )
-
-
-def test_modify_command(modify_command_parser):
-    assert modify_command_parser.parse("""MODIFY Mysubcomponent my_subcomp3__c (
-    my_bool_attribute(true),
-    my_num_attribute(7)
-  )""") == Command(
-        command="MODIFY",
-        component_type_name="Mysubcomponent",
-        component_name="my_subcomp3__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=7, command=None),
-        ],
-        components=None,
-        commands=None,
-        to_component_name=None,
-    )
-
-
-def test_modify_command_optional_semicolon_in_the_end(modify_command_parser):
-    assert modify_command_parser.parse("""MODIFY Mysubcomponent my_subcomp3__c (
-    my_bool_attribute(true),
-    my_num_attribute(7)
-  );""") == Command(
-        command="MODIFY",
-        component_type_name="Mysubcomponent",
-        component_name="my_subcomp3__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=7, command=None),
-        ],
-        components=None,
-        commands=None,
-        to_component_name=None,
-    )
-
-
-def test_mdl_command(mdl_command_parser):
-    assert mdl_command_parser.parse("""ALTER Mycomponent my_comp__c (
-  my_bool_attribute(true),
-  my_num_attribute(5),
-  my_multi_value_attribute ADD (5, 6),
-  my_multi_value_attribute DROP (8),
-
-  ADD Mysubcomponent my_subcomp__c (
-    my_bool_attribute(true),
-    my_num_attribute(5)
-  );
-  DROP Mysubcomponent my_subcomp2__c;
-
-MODIFY Mysubcomponent my_subcomp3__c (
-    my_bool_attribute(true),
-    my_num_attribute(7)
-  );
-
-  RENAME Mysubcomponent my_subcomp4__c TO my_subcomp5__c;
-);
-""") == Command(
-        command="ALTER",
-        component_type_name="Mycomponent",
-        component_name="my_comp__c",
-        attributes=[
-            Attribute(name="my_bool_attribute", value=True, command=None),
-            Attribute(name="my_num_attribute", value=5, command=None),
-            Attribute(name="my_multi_value_attribute", value=[5, 6], command="ADD"),
-            Attribute(name="my_multi_value_attribute", value=8, command="DROP"),
-        ],
-        components=None,
-        commands=[
-            Command(
-                command="ADD",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp__c",
-                attributes=[
-                    Attribute(name="my_bool_attribute", value=True, command=None),
-                    Attribute(name="my_num_attribute", value=5, command=None),
-                ],
-                components=None,
-                commands=None,
-                to_component_name=None,
-            ),
-            Command(
-                command="DROP",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp2__c",
-                attributes=None,
-                components=None,
-                commands=None,
-                to_component_name=None,
-            ),
-            Command(
-                command="MODIFY",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp3__c",
-                attributes=[
-                    Attribute(name="my_bool_attribute", value=True, command=None),
-                    Attribute(name="my_num_attribute", value=7, command=None),
-                ],
-                components=None,
-                commands=None,
-                to_component_name=None,
-            ),
-            Command(
-                command="RENAME",
-                component_type_name="Mysubcomponent",
-                component_name="my_subcomp4__c",
-                attributes=None,
-                components=None,
-                commands=None,
-                to_component_name="my_subcomp5__c",
-            ),
-        ],
-        to_component_name=None,
-    )
+@pytest.mark.parametrize(
+    "mdl,json",
+    [
+        ("create_command_mdl", "create_command_json"),
+        ("recreate_command_mdl", "recreate_command_json"),
+        ("drop_command_mdl", "drop_command_json"),
+        ("rename_command_mdl", "rename_command_json"),
+        ("alter_command_mdl", "alter_command_json"),
+    ],
+)
+def test_mdl_command(mdl, json, request, mdl_command_parser):
+    assert mdl_command_parser.parse(
+        request.getfixturevalue(mdl)
+    ) == msgspec.json.decode(request.getfixturevalue(json), type=Command)

@@ -1,0 +1,1 @@
+{"command":"MODIFY","component_type_name":"Mysubcomponent","component_name":"my_subcomp3__c","attributes":[{"name":"my_bool_attribute","value":true,"command":null},{"name":"my_num_attribute","value":7,"command":null}],"components":null,"commands":null,"to_component_name":null}

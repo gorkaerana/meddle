@@ -1,0 +1,4 @@
+ADD Mysubcomponent my_subcomp__c (
+  my_bool_attribute(true),
+  my_num_attribute(5)
+);

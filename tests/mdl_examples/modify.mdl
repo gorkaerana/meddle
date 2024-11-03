@@ -1,0 +1,4 @@
+MODIFY Mysubcomponent my_subcomp3__c (
+  my_bool_attribute(true),
+  my_num_attribute(7)
+);
