@@ -1,6 +1,6 @@
 from __future__ import annotations
 from pathlib import Path
-from typing import Callable, Generator, Self, TypeAlias
+from typing import Callable, Generator, Literal, Self, TypeAlias
 
 from lark import Lark, Transformer, Tree
 from msgspec import Struct
@@ -10,6 +10,10 @@ INDENT = " " * 4
 
 
 class Unreachable(Exception):
+    pass
+
+
+class ValidationError(Exception):
     pass
 
 
@@ -58,6 +62,21 @@ class Attribute(Struct):
     def dumps(self):
         return "".join(self.__parts__())
 
+    def validate(
+        self,
+        metadata: dict,
+        parent_component_type_name: str,
+    ) -> Literal[True]:
+        attribute_metadata = metadata["table"].get(self.name)
+        if attribute_metadata is None:
+            raise ValidationError(
+                f"Attribute name {repr(self.name)} is not allowed under component type "
+                f"{repr(parent_component_type_name)}. Options are: "
+                f"{', '.join(repr(n) for n in metadata['table'].keys())}."
+            )
+        # TODO: type checking, length check, enum check, etc.
+        return True
+
 
 class Component(Struct):
     component_type_name: str
@@ -76,6 +95,19 @@ class Component(Struct):
 
     def dumps(self):
         return "\n".join(self.__parts__())
+
+    def validate(
+        self, metadata: dict, parent_component_type_name: str
+    ) -> Literal[True]:
+        ctn = self.component_type_name
+        component_metadata = metadata["children"].get(ctn)
+        if component_metadata is None:
+            raise ValidationError(
+                f"Component type {repr(ctn)} is not allowed under component type "
+                f"{repr(parent_component_type_name)}. Options are: "
+                f"{', '.join(repr(k) for k in metadata['children'].keys())}."
+            )
+        return all(a.validate(component_metadata, ctn) for a in self.attributes or [])
 
 
 class Command(Struct):
@@ -118,6 +150,28 @@ class Command(Struct):
 
     def dumps(self):
         return "\n".join(self.__parts__())
+
+    def validate(
+        self, metadata: dict, parent_component_type_name: str | None = None
+    ) -> Literal[True]:
+        # TODO: massage parsed info into whatever's best
+        ctn = self.component_type_name
+        if parent_component_type_name is None:
+            ctm = metadata.get(ctn)
+            if ctm is None:
+                raise ValidationError(f"Component type {repr(ctm)} does not exist.")
+        else:
+            ctm = metadata["children"].get(ctn)
+            if ctm is None:
+                raise ValidationError(
+                    f"Component type {repr(ctn)} is not allowed under component type "
+                    f"{repr(parent_component_type_name)}. Options are: "
+                    f"{', '.join(repr(k) for k in metadata['children'].keys())}."
+                )
+        return all(
+            all(e.validate(ctm, ctn) for e in f or [])
+            for f in [self.attributes, self.components, self.commands]
+        )
 
 
 def generic_command(
@@ -274,4 +328,7 @@ class MdlTreeTransformer(Transformer):
 
 
 if __name__ == "__main__":
-    print(Command.loads(Path("./tests/mdl_examples/logical_operator3.mdl").read_text()))
+    import json
+
+    cmd = Command.loads(Path("./tests/mdl_examples/validation2.mdl").read_text())
+    cmd.validate(json.loads(Path("./src/mdl/validation.json").read_text()))

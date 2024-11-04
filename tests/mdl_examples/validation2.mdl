@@ -1,0 +1,9 @@
+ALTER Atomicsecurity much_wow_so_atomic__c (
+    label('Something'),
+    active(true),
+
+    ADD Fieldsecurity much_secure_very_wow__c (
+    	label('Something else'),
+	active(false)
+    )
+)

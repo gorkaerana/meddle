@@ -1,5 +1,7 @@
 from __future__ import annotations
+import json
 import re
+from pathlib import Path
 from typing import Any, Callable, Generator, TypeAlias
 
 from bs4 import BeautifulSoup
@@ -56,6 +58,16 @@ class Component(msgspec.Struct):
     table: list[Record]
     children: list[Component] = []
 
+    def convert(self):
+        # TODO: parse type checking, etc.
+        return (
+            self.name,
+            {
+                "table": {r["Attribute"]: "TODO" for r in self.table},
+                "children": {k: v for k, v in [c.convert() for c in self.children]},
+            },
+        )
+
 
 components = []
 for tag in soup.find_all("h1"):
@@ -79,4 +91,10 @@ for tag in soup.find_all("h1"):
             component["children"].append(subcomponent)
         components.append(component)
 
-msgspec.convert(components, type=list[Component])
+# Validation
+validated = msgspec.convert(components, type=list[Component])
+
+dumpable = {k: v for k, v in [c.convert() for c in validated]}
+(Path(__file__).parent.parent / "src" / "mdl" / "validation.json").write_text(
+    json.dumps(dumpable, indent=4)
+)

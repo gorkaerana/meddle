@@ -1,5 +1,6 @@
 # TODO: test 'alter_subcommand' and 'alter_subcommands' rules
 # TODO: test all grammar rules
+import json
 from pathlib import Path
 
 import pytest
@@ -16,6 +17,11 @@ def here():
 @pytest.fixture
 def mdl_examples_dir(here):
     return here / "mdl_examples"
+
+
+@pytest.fixture
+def component_metadata(here):
+    return json.loads((here.parent / "src" / "mdl" / "validation.json").read_text())
 
 
 @pytest.fixture
@@ -188,6 +194,16 @@ def logical_operator3_json(mdl_examples_dir):
     return (mdl_examples_dir / "logical_operator3.json").read_text()
 
 
+@pytest.fixture
+def validation1_mdl(mdl_examples_dir):
+    return (mdl_examples_dir / "validation.mdl").read_text()
+
+
+@pytest.fixture
+def validation2_mdl(mdl_examples_dir):
+    return (mdl_examples_dir / "validation2.mdl").read_text()
+
+
 def test_string_attribute_value(attribute_value_parser):
     assert (
         attribute_value_parser("'This is a string, with numbers 123'")
@@ -270,7 +286,7 @@ def test_components(components_parser):
     assert components_parser("""  Mysubcomponent my_subcomp__c (
     my_bool_attribute(true),
     my_num_attribute(5)
-  );
+  ),
         Mysubcomponent my_subcomp__c (
     my_bool_attribute(true),
     my_num_attribute(5)
@@ -298,11 +314,11 @@ def test_components_optional_semicolon_in_the_end(components_parser):
     assert components_parser("""  Mysubcomponent my_subcomp__c (
     my_bool_attribute(true),
     my_num_attribute(5)
-  );
+  ),
         Mysubcomponent my_subcomp__c (
     my_bool_attribute(true),
     my_num_attribute(5)
-  );""") == [
+  ),""") == [
         Component(
             component_type_name="Mysubcomponent",
             component_name="my_subcomp__c",
@@ -439,3 +455,8 @@ def test_mdl_command(mdl, json, request, mdl_command_parser):
     assert mdl_command_parser(request.getfixturevalue(mdl)) == msgspec.json.decode(
         request.getfixturevalue(json), type=Command
     )
+
+
+@pytest.mark.parametrize("mdl", ["validation1_mdl", "validation2_mdl"])
+def test_validation(mdl, mdl_command_parser, component_metadata, request):
+    assert mdl_command_parser(request.getfixturevalue(mdl)).validate(component_metadata)
