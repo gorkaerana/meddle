@@ -154,8 +154,15 @@ def mdl_command_parser():
 
 
 def test_string_attribute_value(attribute_value_parser):
-    assert attribute_value_parser("'This is a string'") == "This is a string"
+    assert attribute_value_parser("'This is a string, with numbers 123'") == "This is a string, with numbers 123"
 
+
+def test_empty_string_attribute_value(attribute_value_parser):
+    assert attribute_value_parser("''") == ""
+
+
+def test_empty_attribute_value(attribute_value_parser):
+    assert attribute_value_parser("") == None
 
 def test_boolean_attribute_value(attribute_value_parser):
     assert attribute_value_parser("true")

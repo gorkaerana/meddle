@@ -29,7 +29,7 @@ AttributeValue: TypeAlias = bool | int | float | str
 
 class Attribute(Struct):
     name: str
-    value: AttributeValue | list[AttributeValue]
+    value: AttributeValue | list[AttributeValue] | None = None
     command: str | None = None
 
     @classmethod
@@ -44,7 +44,9 @@ class Attribute(Struct):
             yield self.command.upper()
             yield " "
         yield "("
-        if isinstance(self.value, bool):
+        if self.value is None:
+            yield ""
+        elif isinstance(self.value, bool):
             yield str(self.value).lower()
         elif isinstance(self.value, list):
             yield repr(self.value)[1:-1]
@@ -182,6 +184,8 @@ class MdlTreeTransformer(Transformer):
             raise Unreachable("A 'number' can either be parsed as an int or a decimal")
 
     def attribute_value(self, children) -> AttributeValue | list[AttributeValue]:
+        if len(children) == 0:
+            return None
         if len(children) == 1:
             return children[0].children[0]
         return [c.children[0] for c in children]

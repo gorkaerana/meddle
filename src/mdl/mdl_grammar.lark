@@ -48,13 +48,14 @@ attribute : attribute_name "(" attribute_value ")"
 
 attribute_name : /[a-z_]+/
 
-attribute_value : value ("," value)*
+attribute_value : value? ("," value)*
 
 value : boolean
     | string
     | number
 
-string : "'" WORD (WS_INLINE WORD)* "'"
+// string : "'" WORD (WS_INLINE WORD)* "'"
+string : "'" /((?!').)+/ "'" | "''"
 number : INT | DECIMAL
 boolean : true | false
 
