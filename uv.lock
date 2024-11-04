@@ -2,15 +2,6 @@ version = 1
 requires-python = ">=3.8"
 
 [[package]]
-name = "appdirs"
-version = "1.4.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d7/d8/05696357e0311f5b5c316d7b95f46c669dd9c15aaeecbb48c7d0aeb88c40/appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41", size = 13470 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/3b/00/2344469e2084fb287c2e0b57b72910309874c3245463acd6cf5e3db69324/appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128", size = 9566 },
-]
-
-[[package]]
 name = "appnope"
 version = "0.1.4"
 source = { registry = "https://pypi.org/simple" }
@@ -149,11 +140,9 @@ source = { editable = "." }
 dependencies = [
     { name = "lark" },
     { name = "msgspec" },
-    { name = "rply" },
-    { name = "ruff" },
 ]
 
-[package.dev-dependencies]
+[package.dependency-groups]
 dev = [
     { name = "ipython" },
     { name = "mypy" },
@@ -166,11 +155,9 @@ dev = [
 requires-dist = [
     { name = "lark", specifier = ">=1.1.9" },
     { name = "msgspec", specifier = ">=0.18.6" },
-    { name = "rply", specifier = ">=0.7.8" },
-    { name = "ruff", specifier = ">=0.7.1" },
 ]
 
-[package.metadata.requires-dev]
+[package.metadata.dependency-groups]
 dev = [
     { name = "ipython", specifier = ">=8.12.3" },
     { name = "mypy", specifier = ">=1.13.0" },
@@ -399,18 +386,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8b/6c/62bbd536103af674e227c41a8f3dcd022d591f6eed5facb5a0f31ee33bbc/pytest-8.3.3.tar.gz", hash = "sha256:70b98107bd648308a7952b06e6ca9a50bc660be218d53c257cc1fc94fda10181", size = 1442487 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6b/77/7440a06a8ead44c7757a64362dd22df5760f9b12dc5f11b6188cd2fc27a0/pytest-8.3.3-py3-none-any.whl", hash = "sha256:a6853c7375b2663155079443d2e45de913a911a11d669df02a50814944db57b2", size = 342341 },
-]
-
-[[package]]
-name = "rply"
-version = "0.7.8"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "appdirs" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/29/44/96b3e8e6426b1f21f90d73cff83a6df94ef8a57ce8102db6c582d0cb3b2e/rply-0.7.8.tar.gz", hash = "sha256:2a808ac25a4580a9991fc304d64434e299a8fc75760574492f242cbb5bb301c9", size = 15850 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/c0/7c/f66be9e75485ae6901ae77d8bdbc3c0e99ca748ab927b3e18205759bde09/rply-0.7.8-py2.py3-none-any.whl", hash = "sha256:28ffd11d656c48aeb8c508eb382acd6a0bd906662624b34388751732a27807e7", size = 16039 },
 ]
 
 [[package]]
