@@ -8,7 +8,6 @@ from msgspec import Struct
 
 INDENT = " " * 4
 
-
 class Unreachable(Exception):
     pass
 
@@ -37,7 +36,7 @@ class Attribute(Struct):
     def loads(self, source: str) -> Attribute:
         return get_parser("attribute").parse(source)
 
-    def __lines__(self, indent_level: int = 0) -> Generator[str]:
+    def __parts__(self, indent_level: int = 0) -> Generator[str]:
         yield (INDENT * indent_level)
         yield self.name
         if self.command is not None:
@@ -54,7 +53,7 @@ class Attribute(Struct):
         yield ")"
 
     def dumps(self):
-        return "".join(self.__lines__())
+        return "".join(self.__parts__())
 
 
 class Component(Struct):
@@ -66,14 +65,14 @@ class Component(Struct):
     def loads(self, source: str) -> Component:
         return get_parser("component").parse(source)
 
-    def __lines__(self, indent_level: int = 0):
+    def __parts__(self, indent_level: int = 0) -> Generator[str]:
         yield f"{INDENT*indent_level}{self.component_type_name} {self.component_name} ("
         for a in self.attributes:
-            yield "".join(a.__lines__(indent_level + 1))
+            yield "".join(a.__parts__(indent_level + 1))
         yield f"{INDENT*indent_level});"
 
     def dumps(self):
-        return "\n".join(self.__lines__())
+        return "\n".join(self.__parts__())
 
 
 class Command(Struct):
@@ -89,44 +88,32 @@ class Command(Struct):
     def loads(self, source: str) -> Component:
         return get_parser("mdl_command").parse(source)
 
-    def __lines__(self, indent_level: int = 0):
+    def __parts__(self, indent_level: int = 0) -> Generator[str]:
+        first_line_start = (
+            f"{INDENT * indent_level}"
+            f"{self.command.upper()} "
+            f"{self.component_type_name} "
+            f"{self.component_name}"
+        )
         if self.command.lower() == "drop":
-            yield (
-                f"{INDENT * indent_level}"
-                f"{self.command.upper()} "
-                f"{self.component_type_name} "
-                f"{self.component_name};"
-            )
+            yield f"{first_line_start};"
         elif self.command.lower() == "rename":
-            yield (
-                f"{INDENT * indent_level}"
-                f"{self.command.upper()} "
-                f"{self.component_type_name} "
-                f"{self.component_name} "
-                "TO "
-                f"{self.to_component_name};"
-            )
+            yield f"{first_line_start} TO {self.to_component_name};"
         else:
-            yield (
-                f"{INDENT * indent_level}"
-                f"{self.command.upper()} "
-                f"{self.component_type_name} "
-                f"{self.component_name} "
-                "("
-            )
+            yield f"{first_line_start} ("
             for a in self.attributes or []:
-                yield "".join(a.__lines__(indent_level + 1))
+                yield "".join(a.__parts__(indent_level + 1)) + ","
             for comp in self.components or []:
-                yield "\n".join(comp.__lines__(indent_level + 1))
+                yield "\n".join(comp.__parts__(indent_level + 1))
             for com in self.commands or []:
                 yield (
                     f"{INDENT * indent_level}"
-                    f"{'\n'.join(com.__lines__(indent_level + 1))}"
+                    f"{'\n'.join(com.__parts__(indent_level + 1))}"
                 )
             yield f"{INDENT * indent_level});"
 
     def dumps(self):
-        return "\n".join(self.__lines__())
+        return "\n".join(self.__parts__())
 
 
 def generic_command(
