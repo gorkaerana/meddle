@@ -32,7 +32,7 @@ if_exists : "IF EXISTS"
 
 if_not_exists : "IF NOT EXISTS"
 
-components : component (";" component)* ";"?
+components : component ("," component)* ","?
 
 component : component_type_name component_name "(" attributes ")"
 

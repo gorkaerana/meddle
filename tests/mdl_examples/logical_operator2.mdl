@@ -7,7 +7,7 @@ RECREATE Picklist IF NOT EXISTS my_picklist__c (
      value('Entry 1'),
      order(1),
      active(true)
-  );
+  ),
   Picklistentry my_second_entry__c(
      value('Entry 2'),
      order(2),
