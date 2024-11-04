@@ -67,7 +67,7 @@ class Component(Struct):
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         yield f"{INDENT*indent_level}{self.component_type_name} {self.component_name} ("
-        for a in self.attributes:
+        for a in self.attributes or []:
             yield "".join(a.__parts__(indent_level + 1))
         yield f"{INDENT*indent_level});"
 
