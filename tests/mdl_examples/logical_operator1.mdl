@@ -1,0 +1,7 @@
+RECREATE Object IF EXISTS my_object__c (
+   label('My Updated Label'),
+   label_plural('My Updated Labels'),
+   active(true),
+   in_menu(true),
+   audit(true)
+);

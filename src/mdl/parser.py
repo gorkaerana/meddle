@@ -8,6 +8,7 @@ from msgspec import Struct
 
 INDENT = " " * 4
 
+
 class Unreachable(Exception):
     pass
 
@@ -85,6 +86,7 @@ class Command(Struct):
     components: list[Component] | None = None
     commands: list[Command] | None = None
     to_component_name: str | None = None
+    logical_operator: str | None = None
 
     @classmethod
     def loads(self, source: str) -> Component:
@@ -124,9 +126,15 @@ def generic_command(
     [Self, list[Tree | list[Attribute] | list[Component] | list[Command]]], Command
 ]:
     def inner(
-        self, forest: list[Tree | list[Attribute] | list[Component] | list[Command]]
+        self, children: list[Tree | list[Attribute] | list[Component] | list[Command]]
     ) -> Command:
-        component_type_name_tree, component_name_tree, *rest = forest
+        if (children[1] == "IF EXISTS") or (children[1] == "IF NOT EXISTS"):
+            component_type_name_tree, logical_operator, component_name_tree, *rest = (
+                children
+            )
+        else:
+            component_type_name_tree, component_name_tree, *rest = children
+            logical_operator = None
         component_type_name = component_type_name_tree.children[0].value
         component_name = component_name_tree.children[0].value
         attributes, components, commands = None, None, None
@@ -142,18 +150,19 @@ def generic_command(
             case [[Attribute(_), *_]]:
                 (attributes,) = rest
             case [[Component(_, _), *_]]:
-                (components,) = forest
+                (components,) = rest
             case [[Command(_), *_]]:
-                (commands,) = forest
+                (commands,) = rest
             case _:
                 raise Unreachable(f"Got {rest} for {repr(command_name)}")
         return Command(
-            command_name,
-            component_type_name,
-            component_name,
-            attributes,
-            components,
-            commands,
+            command=command_name,
+            component_type_name=component_type_name,
+            component_name=component_name,
+            attributes=attributes,
+            components=components,
+            commands=commands,
+            logical_operator=logical_operator,
         )
 
     return inner
@@ -212,6 +221,9 @@ class MdlTreeTransformer(Transformer):
     def alter_attributes(self, children) -> list[Attribute]:
         return children
 
+    def logical_operator(self, children):
+        return children[0].data.value.replace("_", " ").upper()
+
     def component(self, children) -> Component:
         # TODO: account for no attributes
         component_type_name_tree, component_name_tree, attributes = children
@@ -259,3 +271,7 @@ class MdlTreeTransformer(Transformer):
 
     def mdl_command(self, children) -> Command:
         return children[0]
+
+
+if __name__ == "__main__":
+    print(Command.loads(Path("./tests/mdl_examples/logical_operator3.mdl").read_text()))

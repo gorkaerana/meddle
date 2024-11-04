@@ -44,6 +44,11 @@ def components_parser():
 
 
 @pytest.fixture
+def logical_operator_parser():
+    return get_parser("logical_operator").parse
+
+
+@pytest.fixture
 def create_command_parser():
     return get_parser("create_command").parse
 
@@ -153,8 +158,41 @@ def mdl_command_parser():
     return get_parser("mdl_command").parse
 
 
+@pytest.fixture
+def logical_operator1_mdl(mdl_examples_dir):
+    return (mdl_examples_dir / "logical_operator1.mdl").read_text()
+
+
+@pytest.fixture
+def logical_operator1_json(mdl_examples_dir):
+    return (mdl_examples_dir / "logical_operator1.json").read_text()
+
+
+@pytest.fixture
+def logical_operator2_mdl(mdl_examples_dir):
+    return (mdl_examples_dir / "logical_operator2.mdl").read_text()
+
+
+@pytest.fixture
+def logical_operator2_json(mdl_examples_dir):
+    return (mdl_examples_dir / "logical_operator2.json").read_text()
+
+
+@pytest.fixture
+def logical_operator3_mdl(mdl_examples_dir):
+    return (mdl_examples_dir / "logical_operator3.mdl").read_text()
+
+
+@pytest.fixture
+def logical_operator3_json(mdl_examples_dir):
+    return (mdl_examples_dir / "logical_operator3.json").read_text()
+
+
 def test_string_attribute_value(attribute_value_parser):
-    assert attribute_value_parser("'This is a string, with numbers 123'") == "This is a string, with numbers 123"
+    assert (
+        attribute_value_parser("'This is a string, with numbers 123'")
+        == "This is a string, with numbers 123"
+    )
 
 
 def test_empty_string_attribute_value(attribute_value_parser):
@@ -162,7 +200,8 @@ def test_empty_string_attribute_value(attribute_value_parser):
 
 
 def test_empty_attribute_value(attribute_value_parser):
-    assert attribute_value_parser("") == None
+    assert attribute_value_parser("") is None
+
 
 def test_boolean_attribute_value(attribute_value_parser):
     assert attribute_value_parser("true")
@@ -220,6 +259,11 @@ def test_component(component_parser):
             Attribute(name="my_num_attribute", value=5),
         ],
     )
+
+
+@pytest.mark.parametrize("s", ["IF EXISTS", "IF NOT EXISTS"])
+def test_logical_operator(s, logical_operator_parser):
+    assert logical_operator_parser(s) == s
 
 
 def test_components(components_parser):
@@ -386,6 +430,9 @@ def test_modify_command_optional_semicolon_in_the_end(
         ("drop_command_mdl", "drop_command_json"),
         ("rename_command_mdl", "rename_command_json"),
         ("alter_command_mdl", "alter_command_json"),
+        ("logical_operator1_mdl", "logical_operator1_json"),
+        ("logical_operator2_mdl", "logical_operator2_json"),
+        ("logical_operator3_mdl", "logical_operator3_json"),
     ],
 )
 def test_mdl_command(mdl, json, request, mdl_command_parser):

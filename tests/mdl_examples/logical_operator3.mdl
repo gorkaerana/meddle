@@ -1,0 +1,9 @@
+ALTER Object IF EXISTS my_object__c (
+   ADD Field IF NOT EXISTS my_field__c (
+       label('My Field'),
+       type('String'),
+       required(false),
+       list_column(true),
+       active(true)
+   )
+);

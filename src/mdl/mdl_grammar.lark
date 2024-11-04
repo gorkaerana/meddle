@@ -4,15 +4,15 @@ mdl_command : create_command
     | rename_command
     | alter_command
 
-create_command : "CREATE" component_type_name component_name "(" attributes? components? ")" ";"?
+create_command : "CREATE" component_type_name logical_operator? component_name "(" attributes? components? ")" ";"?
 
-recreate_command : "RECREATE" component_type_name component_name "(" attributes? components? ")" ";"?
+recreate_command : "RECREATE" component_type_name logical_operator? component_name "(" attributes? components? ")" ";"?
 
 drop_command : "DROP" component_type_name component_name ";"?
 
 rename_command : "RENAME" component_type_name component_name "TO" component_name ";"?
 
-alter_command : "ALTER" component_type_name component_name "(" alter_attributes? components? alter_subcommands?")" ";"?
+alter_command : "ALTER" component_type_name logical_operator? component_name "(" alter_attributes? components? alter_subcommands?")" ";"?
 
 alter_subcommands : alter_subcommand (";"? alter_subcommand)* ";"?
 
@@ -22,9 +22,15 @@ alter_subcommand : drop_command
     | add_command
 
 // "ADD" and "MODIFY" commands can only go inside an "ALTER" command
-add_command : "ADD" component_type_name component_name "(" attributes? components? ")" ";"?
+add_command : "ADD" component_type_name logical_operator? component_name "(" attributes? components? ")" ";"?
 
-modify_command : "MODIFY" component_type_name component_name "(" attributes? components? ")" ";"?
+modify_command : "MODIFY" component_type_name logical_operator? component_name "(" attributes? components? ")" ";"?
+
+logical_operator : if_exists | if_not_exists
+
+if_exists : "IF EXISTS"
+
+if_not_exists : "IF NOT EXISTS"
 
 components : component (";" component)* ";"?
 
@@ -54,7 +60,7 @@ value : boolean
     | string
     | number
 
-// string : "'" WORD (WS_INLINE WORD)* "'"
+// `| "''"` needed cause the Lark lexer does not allow zero-width terminals
 string : "'" /((?!').)+/ "'" | "''"
 number : INT | DECIMAL
 boolean : true | false
@@ -62,7 +68,6 @@ boolean : true | false
 true : "true"
 false : "false"
 
-%import common.WORD
 %import common.INT
 %import common.DECIMAL
 %import common.WS
