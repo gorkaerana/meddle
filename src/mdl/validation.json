@@ -1,25 +1,25 @@
 {
     "Accountmessage": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "email_body": "TODO",
             "subject": "TODO",
             "default_lang": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Appsecurityrule": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "help_content": "TODO",
             "allow_custom_objects": "TODO",
             "description": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Appsecurityfield": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "multi_value": "TODO",
@@ -27,10 +27,10 @@
                     "type": "TODO",
                     "object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Appsecurityassignment": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "field": "TODO",
@@ -39,41 +39,41 @@
                     "securityfield": "TODO",
                     "object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Atomicsecurity": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "object": "TODO",
             "object_lifecycle": "TODO",
             "state": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Fieldsecurity": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "role": "TODO",
                     "type": "TODO",
                     "fields": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Objectcontrolsecurity": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "role": "TODO",
                     "type": "TODO",
                     "object_controls": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Actionsecurity": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "role": "TODO",
@@ -81,10 +81,10 @@
                     "object_actions": "TODO",
                     "lifecycle_actions": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Workflowactionsecurity": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "role": "TODO",
@@ -92,10 +92,10 @@
                     "workflow_actions": "TODO",
                     "workflow_task_actions": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Relationshipsecurity": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "role": "TODO",
@@ -103,12 +103,12 @@
                     "document_fields": "TODO",
                     "object_fields": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Casechildconfig": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "object_key": "TODO",
@@ -122,19 +122,19 @@
             "config_key": "TODO",
             "order": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Checklisttype": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "target_object": "TODO",
             "target_object_type": "TODO",
             "version_controlled": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Checklistmatchingfield": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "target_matching_field": "TODO",
@@ -142,12 +142,12 @@
                     "checklist_design_matching_field": "TODO",
                     "checklist_design_object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Customwebapi": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "api_group": "TODO",
@@ -156,10 +156,10 @@
             "minimum_version": "TODO",
             "source_code": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Dashboard": {
-        "table": {
+        "attributes": {
             "active": "TODO",
             "label": "TODO",
             "description": "TODO",
@@ -168,18 +168,18 @@
             "dashboard_markup": "TODO",
             "tags": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Docatomicsecurity": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "document_lifecycle": "TODO",
             "state": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Docworkflowactionsecurity": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "role": "TODO",
@@ -187,22 +187,22 @@
                     "workflow_actions": "TODO",
                     "workflow_task_actions": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Docactionsecurity": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "role": "TODO",
                     "type": "TODO",
                     "lifecycle_actions": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Docfield": {
-        "table": {
+        "attributes": {
             "picklist": "TODO",
             "relationship_name": "TODO",
             "scale": "TODO",
@@ -246,10 +246,10 @@
             "type": "TODO",
             "default_value": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Docfielddependency": {
-        "table": {
+        "attributes": {
             "doctype": "TODO",
             "docfield": "TODO",
             "docfield_multi_value": "TODO",
@@ -262,10 +262,10 @@
             "state": "TODO",
             "role": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Docfieldlayout": {
-        "table": {
+        "attributes": {
             "active": "TODO",
             "allow_field_assignment": "TODO",
             "show_in_edit_mode": "TODO",
@@ -275,10 +275,10 @@
             "order": "TODO",
             "fields": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Doclifecycle": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO",
@@ -288,9 +288,9 @@
             "signature_pages": "TODO",
             "overlays": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Doclifecyclerole": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "description": "TODO",
@@ -298,10 +298,10 @@
                     "note_color": "TODO",
                     "security_options": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Doclifecyclestate": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "description": "TODO",
@@ -313,59 +313,59 @@
                     "user_action": "TODO",
                     "security_settings": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Doclifecycleevent": {
-                "table": {
+                "attributes": {
                     "active": "TODO",
                     "event": "TODO",
                     "rule": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Docmatchingrule": {
-        "table": {
+        "attributes": {
             "lifecycle": "TODO",
             "role": "TODO",
             "active": "TODO",
             "description": "TODO",
             "label": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Docmatchingcriterion": {
-                "table": {
+                "attributes": {
                     "object_field": "TODO",
                     "data_field": "TODO",
                     "object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Docparticipantrule": {
-        "table": {
+        "attributes": {
             "lifecycle": "TODO",
             "role": "TODO",
             "active": "TODO",
             "description": "TODO",
             "label": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Docparticipantcriterion": {
-                "table": {
+                "attributes": {
                     "object_field": "TODO",
                     "data_field": "TODO",
                     "object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Docrelationshiptype": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "single_use": "TODO",
@@ -376,10 +376,10 @@
             "carry_forward_target_specific": "TODO",
             "relationship_filter": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Doctype": {
-        "table": {
+        "attributes": {
             "milestone_types": "TODO",
             "rendition_types": "TODO",
             "allow_attachments": "TODO",
@@ -411,10 +411,10 @@
             "label": "TODO",
             "fields": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Documentaction": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "user_input_object_type": "TODO",
@@ -425,50 +425,50 @@
             "usages": "TODO",
             "source_code": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Documentstagegroup": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "document_lifecycle": "TODO",
             "description": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Documentstage": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "document_lifecycle_states_ref": "TODO",
                     "description": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Emailprocessor": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "checksum": "TODO",
             "source_code": "TODO",
             "allowed_senders": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Formattedoutput": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "root_object_type": "TODO",
             "root_object": "TODO",
             "template_file": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Inboundemailaddress": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "authenticate_sender": "TODO",
@@ -479,28 +479,28 @@
             "allowed_sender_groups": "TODO",
             "allowed_senders": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Integrationrule": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "integration_point": "TODO",
             "primary_query_object": "TODO",
             "connection": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Queryobjectrule": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "query_object": "TODO",
                     "filter_clause": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Fieldrule": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "target_field_lookup": "TODO",
@@ -516,12 +516,12 @@
                     "reference_lookup": "TODO",
                     "field_default": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Job": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active_after_clone": "TODO",
             "timezone": "TODO",
@@ -539,9 +539,9 @@
             "day_of_month": "TODO",
             "week_number": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Sendnotificationjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "related_doc_conditions": "TODO",
@@ -552,10 +552,10 @@
                     "recipients": "TODO",
                     "template": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Changeobjectstatejobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "conditions": "TODO",
@@ -563,10 +563,10 @@
                     "terminate_existing_workflows": "TODO",
                     "destination_state": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Noopjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "related_doc_conditions": "TODO",
@@ -577,19 +577,19 @@
                     "recipients": "TODO",
                     "template": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Objectnoopjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "conditions": "TODO",
                     "object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Httppostjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "post_session_creds": "TODO",
@@ -597,26 +597,26 @@
                     "external_url": "TODO",
                     "session_granted_by": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Sdkbatchjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "job_metadata": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Edlmatchjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "conditions": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Flashreportjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "report_name": "TODO",
@@ -631,28 +631,28 @@
                     "include_report_in_email": "TODO",
                     "collapse_groups": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Scheduleddataexportjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "selected_entities": "TODO",
                     "data_storage_option": "TODO",
                     "enable_full_data_export": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Documentperiodicreviewjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "conditions": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Sendobjectnotificationjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "conditions": "TODO",
@@ -660,10 +660,10 @@
                     "recipients": "TODO",
                     "template": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Changestatejobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "related_doc_conditions": "TODO",
@@ -676,20 +676,20 @@
                     "override_checkout_state_change": "TODO",
                     "destination_state": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Schedulededcjobaction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "primary_action": "TODO",
                     "edcAsyncPayload": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Jobmetadata": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "chunk_size": "TODO",
@@ -698,17 +698,17 @@
             "job_code": "TODO",
             "queue": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Layoutprofile": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Objectlayout": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "record_creation_layout": "TODO",
@@ -716,12 +716,12 @@
                     "object": "TODO",
                     "pagelayouts": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Layoutrule": {
-        "table": {
+        "attributes": {
             "hide_layout": "TODO",
             "focus_on_layout": "TODO",
             "hide_fields": "TODO",
@@ -736,10 +736,10 @@
             "description": "TODO",
             "label": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Lifecyclestatetype": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "document_lifecycle": "TODO",
@@ -750,10 +750,10 @@
             "object_lifecycle": "TODO",
             "lifecycle_type": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Lifecyclestatetypeassociation": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "document_lifecycle": "TODO",
@@ -763,20 +763,20 @@
             "document_lifecycle_state": "TODO",
             "object_lifecycle": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Link": {
-        "table": {
+        "attributes": {
             "send_session_via_post_message": "TODO",
             "url": "TODO",
             "component": "TODO",
             "label": "TODO",
             "target": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Matchingrule": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO",
@@ -785,45 +785,45 @@
             "user_role_fields": "TODO",
             "data_fields": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Messagedeliveryeventhandler": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "checksum": "TODO",
             "source_code": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Messagegroup": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Message": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "default_value": "TODO",
                     "system_managed": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Messageprocessor": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "checksum": "TODO",
             "source_code": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Mobileshareactionconfig": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "mobile_share_action": "TODO",
@@ -831,10 +831,10 @@
             "description": "TODO",
             "allowed_for_groups": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Mobiletab": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "icon": "TODO",
@@ -843,10 +843,10 @@
             "mobile_label": "TODO",
             "order": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Notificationtemplate": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO",
@@ -858,10 +858,10 @@
             "referenced_component": "TODO",
             "notification_category": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Object": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "label_plural": "TODO",
             "active": "TODO",
@@ -891,9 +891,9 @@
             "in_merge": "TODO",
             "summary_fields": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Field": {
-                "table": {
+                "attributes": {
                     "related_local_currency_field": "TODO",
                     "show_in_header": "TODO",
                     "secure_relationship": "TODO",
@@ -949,20 +949,20 @@
                     "multi_part_readonly": "TODO",
                     "currency_type": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Index": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "fields": "TODO",
                     "description": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Objectaction": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "description": "TODO",
             "parameters": "TODO",
@@ -970,10 +970,10 @@
             "available_all_states": "TODO",
             "active": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Objectlifecycle": {
-        "table": {
+        "attributes": {
             "state_labels": "TODO",
             "labeled_states": "TODO",
             "label": "TODO",
@@ -981,88 +981,88 @@
             "starting_state": "TODO",
             "description": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Objectlifecyclestate": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "record_inactive": "TODO",
                     "record_status": "TODO",
                     "description": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Objectlifecyclestateentrycriterion": {
-                "table": {
+                "attributes": {
                     "rule": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Objectlifecyclestateentryaction": {
-                "table": {
+                "attributes": {
                     "rule": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Objectlifecyclestateuseraction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "rule": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Objectlifecycleevent": {
-                "table": {
+                "attributes": {
                     "rule": "TODO",
                     "event": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Objectlifecyclerole": {
-                "table": {
+                "attributes": {
                     "active": "TODO",
                     "application_role": "TODO",
                     "permissions": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Objectlifecyclepermission": {
-                "table": {
+                "attributes": {
                     "states": "TODO",
                     "role": "TODO",
                     "permission": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Objectlifecyclestagegroup": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "object_type": "TODO",
             "description": "TODO",
             "object_lifecycle": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Objectlifecyclestage": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "object_lifecycle_states_ref": "TODO",
                     "description": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Objecttype": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "label_plural": "TODO",
             "active": "TODO",
@@ -1071,27 +1071,27 @@
             "default_type": "TODO",
             "summary_fields": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Typefield": {
-                "table": {
+                "attributes": {
                     "source": "TODO",
                     "required": "TODO",
                     "relationship_criteria": "TODO",
                     "pickentries": "TODO",
                     "default_value": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Typeaction": {
-                "table": {
+                "attributes": {
                     "action": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Objectvalidation": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "expression": "TODO",
@@ -1099,10 +1099,10 @@
             "error_message": "TODO",
             "error_location": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Objectworkflow": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "object_lifecycles": "TODO",
@@ -1121,9 +1121,9 @@
             "show_fields": "TODO",
             "bound_create_draft": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Objectworkflowstep": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "type": "TODO",
                     "next_steps": "TODO",
@@ -1131,19 +1131,19 @@
                     "step_detail": "TODO",
                     "description": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "WorkflowCancelationAction": {
-                "table": {
+                "attributes": {
                     "rule": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Outboundemaildomain": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "dns_records": "TODO",
@@ -1151,10 +1151,10 @@
             "verification_status": "TODO",
             "sender_domain": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Overlaytemplate": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "watermark": "TODO",
@@ -1165,19 +1165,19 @@
             "header_01": "TODO",
             "header_02": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Overlayoverride": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "file": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Pagelayout": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "default_layout": "TODO",
             "page_markup": "TODO",
@@ -1185,10 +1185,10 @@
             "description": "TODO",
             "display_lifecycle_stages": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Pagelink": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "description": "TODO",
             "url": "TODO",
@@ -1197,44 +1197,44 @@
             "object": "TODO",
             "page": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Permissionset": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Picklist": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "can_add_values": "TODO",
             "can_reorder_values": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Picklistentry": {
-                "table": {
+                "attributes": {
                     "value": "TODO",
                     "order": "TODO",
                     "active": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Printableviewtestscript": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "template": "TODO",
             "header_logo": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Qmsactionpathconfiguration": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "parent_object": "TODO",
@@ -1244,9 +1244,9 @@
             "parent_object_lifecycle": "TODO",
             "action_object": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qmsactionstepconfiguration": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "parent_start_state": "TODO",
@@ -1258,22 +1258,22 @@
                     "parent_object_lifecycle": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Qmsautomationusertemplate": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO",
             "username_pattern": "TODO",
             "security_profile": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Qualityexternalnotification": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "target_object_type": "TODO",
@@ -1281,21 +1281,21 @@
             "description": "TODO",
             "do_not_include_header_footer": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qualitydistributiongroup": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "maximum_recipients": "TODO",
                     "help_content": "TODO",
                     "minimum_recipients": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Qualityexternalnotificationtemplate": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "recipient_roles": "TODO",
@@ -1313,39 +1313,39 @@
             "can_add_or_remove_participants": "TODO",
             "quality_external_notification": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qualityextnotificationtemplatedistgroup": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "quality_distribution_group": "TODO",
                     "quality_external_notification": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Qualityincidentintakelayout": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qualityincidentintakelayoutfield": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "target_object": "TODO",
                     "field_to_display": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Qualityobjectrelationshipconfig": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "right_field": "TODO",
@@ -1354,46 +1354,46 @@
             "target_object": "TODO",
             "relationship_picklist": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qualitypicklistvaluemap": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "inverse_picklist_value": "TODO",
                     "relationship_picklist": "TODO",
                     "picklist_value": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Qualityreasonforchange": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO",
             "target_object": "TODO",
             "target_object_type": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qualityreasonforchangefieldcriteria": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Qualityreasonforchangecommentcriterion": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "reason_for_change_picklist": "TODO",
                     "value_requiring_comment": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Qualityreasonforchangestate": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "field_criteria": "TODO",
@@ -1401,10 +1401,10 @@
                     "object_lifecycle": "TODO",
                     "reason_for_change": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Qualityreasonforchangefield": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "field": "TODO",
@@ -1414,12 +1414,12 @@
                     "target_object_type": "TODO",
                     "type_field": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Qualityrecordcheck": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "allow_date_overrides": "TODO",
@@ -1443,9 +1443,9 @@
             "target_object": "TODO",
             "target_object_type": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qualitymatchtier": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "relationship_type_required": "TODO",
@@ -1457,10 +1457,10 @@
                     "similarity_score": "TODO",
                     "tier_color": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Qualityrelatedrecordmatchfield": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "related_match_fields": "TODO",
@@ -1470,12 +1470,12 @@
                     "related_outbound_field": "TODO",
                     "related_object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Qualityrecordcheckinsight": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "target_object_type": "TODO",
@@ -1484,9 +1484,9 @@
             "description": "TODO",
             "likely_similarity_score": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qualityinsightrelatedrecordsummaryfield": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "related_inbound_field": "TODO",
@@ -1496,10 +1496,10 @@
                     "related_outbound_field": "TODO",
                     "related_object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Qualityinsightdisplayfield": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "target_object_type": "TODO",
@@ -1508,10 +1508,10 @@
                     "order": "TODO",
                     "display_type_field": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Qualityinsightsummaryfield": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "summary_type_field": "TODO",
@@ -1519,12 +1519,12 @@
                     "summary_field": "TODO",
                     "target_object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Qualityrecordchecklifecycleassociation": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "lifecycle_states_to_include": "TODO",
@@ -1532,9 +1532,9 @@
             "object_lifecycle": "TODO",
             "quality_record_check": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qualityrelationshipstatemapassociation": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "object_lifecycle": "TODO",
@@ -1543,20 +1543,20 @@
                     "quality_picklist_value_map": "TODO",
                     "quality_record_check": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Qualityreportabilitydecisiontreeconfig": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO",
             "reportability_assessment_type": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qualityrdtqualifier": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "description": "TODO",
@@ -1565,12 +1565,12 @@
                     "picklist": "TODO",
                     "picklist_value": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Qualityteam": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "destination_state": "TODO",
@@ -1584,18 +1584,18 @@
             "object": "TODO",
             "objectlifecycle": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Qualityteamrolemembershiprestriction": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "role": "TODO",
                     "exclusive_role": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Qualityteamrole": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "maximum_user_in_role": "TODO",
@@ -1613,10 +1613,10 @@
                     "object": "TODO",
                     "objectlifecycle": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             },
             "Qualityteamrelatedobjectsecurity": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "outbound_reference_field": "TODO",
@@ -1626,12 +1626,12 @@
                     "application_role": "TODO",
                     "related_object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Queue": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "sequential": "TODO",
@@ -1643,21 +1643,21 @@
             "message_processor": "TODO",
             "message_delivery_event_handler_user": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Queueconnection": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "connection_type": "TODO",
                     "connection_name": "TODO",
                     "deliver_to_queue": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Recordaction": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "user_input_object_type": "TODO",
@@ -1669,20 +1669,20 @@
             "source_code": "TODO",
             "object": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Recordmergeeventhandler": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "checksum": "TODO",
             "source_code": "TODO",
             "object": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Recordroletrigger": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "checksum": "TODO",
@@ -1692,10 +1692,10 @@
             "order": "TODO",
             "object": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Recordtrigger": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "checksum": "TODO",
@@ -1705,10 +1705,10 @@
             "order": "TODO",
             "object": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Recordworkflowaction": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "checksum": "TODO",
@@ -1716,10 +1716,10 @@
             "step_types": "TODO",
             "object": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Relatedrecordsetup": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "source_object_type": "TODO",
@@ -1729,9 +1729,9 @@
             "source_object": "TODO",
             "related_object": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Relatedrecordfieldvaluemapping": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "mapped_source_object_field": "TODO",
@@ -1741,12 +1741,12 @@
                     "mapped_source_reference_object": "TODO",
                     "related_object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Renditionprofile": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "pdf_format": "TODO",
@@ -1767,10 +1767,10 @@
             "bookmark_list_per_caption_type": "TODO",
             "no_mark_up": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Renditiontype": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "density": "TODO",
@@ -1784,10 +1784,10 @@
             "resize": "TODO",
             "resample": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Report": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO",
@@ -1807,19 +1807,19 @@
             "include_full_richtext": "TODO",
             "include_richtext_html_tags": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Reportexceltemplate": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "filename": "TODO",
             "template_file": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Reporttype": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO",
@@ -1828,19 +1828,19 @@
             "configuration": "TODO",
             "class": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Rimeventchangedetail": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "detail_description": "TODO",
             "detail_object": "TODO",
             "detail_object_type": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Rimeventchangedetailfield": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "detail_field_is_required": "TODO",
@@ -1848,12 +1848,12 @@
                     "detail_field": "TODO",
                     "detail_field_order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Rimeventchangetype": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "related_change_type_add": "TODO",
@@ -1864,30 +1864,30 @@
             "related_change_type_replaced_by": "TODO",
             "type_description": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Rimeventchangetypedetail": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "type_detail": "TODO",
                     "detail_order": "TODO",
                     "detail_is_required": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Rolepermissionset": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "permission_sets": "TODO",
             "application_role": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Savedview": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "description": "TODO",
             "tab": "TODO",
@@ -1909,10 +1909,10 @@
             "object_public_key": "TODO",
             "view_type": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Sdkjob": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "idempotent": "TODO",
@@ -1921,27 +1921,27 @@
             "checksum": "TODO",
             "source_code": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Searchablefield": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "field": "TODO",
             "required": "TODO",
             "object": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Searchcollection": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Searchcollectionsection": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "vql_criteria": "TODO",
@@ -1952,38 +1952,38 @@
                     "object": "TODO",
                     "document_type": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Securityprofile": {
-        "table": {
+        "attributes": {
             "permission_sets": "TODO",
             "active": "TODO",
             "label": "TODO",
             "description": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Sharingrule": {
-        "table": {
+        "attributes": {
             "criteria": "TODO",
             "description": "TODO",
             "active": "TODO",
             "label": "TODO",
             "object": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Sharingrole": {
-                "table": {
+                "attributes": {
                     "members": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Signaturepage": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "signature_block_02": "TODO",
@@ -1995,10 +1995,10 @@
             "location": "TODO",
             "header_02": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Tab": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "order": "TODO",
             "dashboard": "TODO",
@@ -2024,9 +2024,9 @@
             "global_search_placeholder": "TODO",
             "related_section": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Subtab": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "order": "TODO",
                     "dashboard": "TODO",
@@ -2052,19 +2052,19 @@
                     "global_search_placeholder": "TODO",
                     "related_section": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Tabcollection": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "help_content": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Tabcollectionitem": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "tab": "TODO",
@@ -2072,50 +2072,50 @@
                     "type": "TODO",
                     "order": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Tag": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "phrases": "TODO",
             "auto_tag": "TODO",
             "include_archive": "TODO",
             "active": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Tagsecurityrule": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "help_content": "TODO",
             "allow_custom_objects": "TODO",
             "description": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Tagsecurityruleassignment": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Userdefinedclass": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "checksum": "TODO",
             "source_code": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Userdefinedmodel": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "parent": "TODO",
@@ -2123,20 +2123,20 @@
             "source_code": "TODO",
             "serialization_include": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Userdefinedservice": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "checksum": "TODO",
             "interface": "TODO",
             "source_code": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Vaulttoken": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "clone_behavior": "TODO",
@@ -2144,37 +2144,37 @@
             "system_managed": "TODO",
             "value": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Visualhierarchyconfiguration": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "visual_hierarchy_type": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Visualhierarchyconfigurationfield": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "active": "TODO",
                     "field": "TODO",
                     "display_order": "TODO",
                     "object": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     },
     "Webapigroup": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "description": "TODO"
         },
-        "children": {}
+        "subcomponents": {}
     },
     "Workflow": {
-        "table": {
+        "attributes": {
             "label": "TODO",
             "active": "TODO",
             "lifecycle": "TODO",
@@ -2182,16 +2182,16 @@
             "workflow_type": "TODO",
             "bulk_email_message": "TODO"
         },
-        "children": {
+        "subcomponents": {
             "Workflowstep": {
-                "table": {
+                "attributes": {
                     "label": "TODO",
                     "status": "TODO",
                     "description": "TODO",
                     "flow_type": "TODO",
                     "next_steps": "TODO"
                 },
-                "children": {}
+                "subcomponents": {}
             }
         }
     }

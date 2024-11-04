@@ -63,8 +63,8 @@ class Component(msgspec.Struct):
         return (
             self.name,
             {
-                "table": {r["Attribute"]: "TODO" for r in self.table},
-                "children": {k: v for k, v in [c.convert() for c in self.children]},
+                "attributes": {r["Attribute"]: "TODO" for r in self.table},
+                "subcomponents": {k: v for k, v in [c.convert() for c in self.children]},
             },
         )
 
