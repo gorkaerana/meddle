@@ -1,9 +1,13 @@
 from __future__ import annotations
+import json
 from pathlib import Path
-from typing import Callable, Generator, Literal, Self, TypeAlias
+from typing import Callable, Generator, Literal, Self, TypeAlias, Type
 
 from lark import Lark, Transformer, Tree
+import msgspec
 from msgspec import Struct
+
+from mdl.validation import comment_to_type
 
 
 INDENT = " " * 4
@@ -62,6 +66,17 @@ class Attribute(Struct):
     def dumps(self):
         return "".join(self.__parts__())
 
+    def validator(self, metadata: dict) -> Type:
+        value_type_annotation = comment_to_type(metadata["type_data"])
+        return msgspec.defstruct(
+            "ValidatedAttribute",
+            [
+                ("name", Literal[self.name]),
+                ("value", value_type_annotation),
+            ],
+            tag=self.name,
+        )
+
     def validate(
         self,
         metadata: dict,
@@ -69,12 +84,20 @@ class Attribute(Struct):
     ) -> Literal[True]:
         attribute_metadata = metadata["attributes"].get(self.name)
         if attribute_metadata is None:
+            options = ", ".join(repr(n) for n in metadata["attributes"].keys())
             raise ValidationError(
                 f"Attribute name {repr(self.name)} is not allowed under component type "
-                f"{repr(parent_component_type_name)}. Options are: "
-                f"{', '.join(repr(n) for n in metadata['attributes'].keys())}."
+                f"{repr(parent_component_type_name)}. Options are: {options}."
             )
-        # TODO: type checking, length check, enum check, etc.
+
+        encoded = msgspec.json.encode(self)
+        try:
+            msgspec.json.decode(encoded, type=self.validator(attribute_metadata))
+        except msgspec.ValidationError as e:
+            raise ValidationError(
+                f"Issue at attribute {repr(self.name)} under "
+                f"{repr(parent_component_type_name)}: {e}"
+            )
         return True
 
 
@@ -96,16 +119,31 @@ class Component(Struct):
     def dumps(self):
         return "\n".join(self.__parts__())
 
+    def validator(self, metadata):
+        fields = [("component_type_name", Literal[self.component_type_name])]
+        struct = msgspec.defstruct("ValidatedComponent", fields)
+        return struct
+
     def validate(
         self, metadata: dict, parent_component_type_name: str
     ) -> Literal[True]:
         ctn = self.component_type_name
         component_metadata = metadata["subcomponents"].get(ctn)
         if component_metadata is None:
+            options = ", ".join(repr(k) for k in metadata["subcomponents"].keys())
             raise ValidationError(
                 f"Component type {repr(ctn)} is not allowed under component type "
-                f"{repr(parent_component_type_name)}. Options are: "
-                f"{', '.join(repr(k) for k in metadata['subcomponents'].keys())}."
+                f"{repr(parent_component_type_name)}. Options are: {options}."
+            )
+        encoded = msgspec.json.encode(self)
+        try:
+            msgspec.json.decode(
+                encoded, type=self.validator(component_metadata["attributes"])
+            )
+        except msgspec.ValidationError as e:
+            raise ValidationError(
+                f"Issue at {repr(ctn)} {repr(self.component_name)} "
+                f"under {repr(parent_component_type_name)}: {str(e).strip().strip('Object').strip()}"
             )
         return all(a.validate(component_metadata, ctn) for a in self.attributes or [])
 
@@ -163,10 +201,10 @@ class Command(Struct):
         else:
             ctm = metadata["subcomponents"].get(ctn)
             if ctm is None:
+                options = ", ".join(repr(k) for k in metadata["subcomponents"].keys())
                 raise ValidationError(
                     f"Component type {repr(ctn)} is not allowed under component type "
-                    f"{repr(parent_component_type_name)}. Options are: "
-                    f"{', '.join(repr(k) for k in metadata['subcomponents'].keys())}."
+                    f"{repr(parent_component_type_name)}. Options are: {options}."
                 )
         return all(
             all(e.validate(ctm, ctn) for e in f or [])
@@ -325,3 +363,17 @@ class MdlTreeTransformer(Transformer):
 
     def mdl_command(self, children) -> Command:
         return children[0]
+
+
+if __name__ == "__main__":
+    command = Command.loads(
+        (
+            Path(__file__).parent.parent.parent
+            / "tests"
+            / "mdl_examples"
+            / "validation.mdl"
+        ).read_text()
+    )
+    assert command.validate(
+        json.loads((Path(__file__).parent / "validation.json").read_text())
+    )

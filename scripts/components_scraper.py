@@ -1,10 +1,8 @@
 from __future__ import annotations
 import json
 import re
-from functools import reduce
-from operator import or_
 from pathlib import Path
-from typing import Annotated, Any, Callable, Generator, Type, TypeAlias, Literal
+from typing import Any, Callable, Generator, TypeAlias
 
 from bs4 import BeautifulSoup
 from bs4.element import Tag
@@ -112,62 +110,3 @@ dumpable = {k: v for k, v in [c.convert() for c in validated]}
 (Path(__file__).parent.parent / "src" / "mdl" / "validation.json").write_text(
     json.dumps(dumpable, indent=4)
 )
-
-
-def comment_to_type(comment: str) -> Type:
-    supported_types = {
-        "String": str,
-        "Boolean": bool,
-        "Number": int,
-        "LongString": str,
-        "Enum": Literal,
-    }
-    type_match = re.search(r"Type : (.*)", comment)
-    max_len_match = re.search(r"Maximum length : (.*)", comment)
-    min_val_match = re.search(r"Minimum value : (.*)", comment)
-    max_val_match = re.search(r"Maximum value : (.*)", comment)
-    allowed_vals_match = re.search(r"Allowed values : (.*)", comment, re.MULTILINE)
-    allow_multiple_vals_match = re.search(r"Allows multiple values", comment)
-    type_ = supported_types.get(type_match.groups(0)[0])
-    if type_ is None:
-        return Any
-    if allow_multiple_vals_match is not None:
-        type_ = list[type_]
-    elif allowed_vals_match is not None:
-        type_ = Literal[*(s for s in allowed_vals_match.groups(0)[0].split("|") if s)]
-    if any(m is not None for m in [max_len_match, min_val_match, max_val_match]):
-        annotation_metadata = {
-            k: int(m.groups(0)[0])
-            for k, m in [
-                ("max_length", max_len_match),
-                ("ge", min_val_match),
-                ("le", max_val_match),
-            ]
-            if m is not None
-        }
-        type_ = Annotated[type_, msgspec.Meta(**annotation_metadata)]
-    return type_
-
-
-for component in validated:
-    attribute_structs = []
-    for row in component.table:
-        attribute_name = row[""]
-        s = msgspec.defstruct(
-            "Attribute",
-            [
-                ("name", Literal[row["Attribute"]]),
-                ("value", comment_to_type(attribute_name)),
-            ],
-            tag=f"{component.name}-{attribute_name}",
-        )
-        attribute_structs.append(s)
-    big_s = msgspec.defstruct(
-        "Component",
-        [
-            ("component_type_name", Literal[component.name]),
-            ("component_name", str),
-            ("attributes", list[reduce(or_, attribute_structs)]),
-        ],
-        tag=component.name,
-    )
