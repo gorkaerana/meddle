@@ -325,10 +325,3 @@ class MdlTreeTransformer(Transformer):
 
     def mdl_command(self, children) -> Command:
         return children[0]
-
-
-if __name__ == "__main__":
-    import json
-
-    cmd = Command.loads(Path("./tests/mdl_examples/validation2.mdl").read_text())
-    cmd.validate(json.loads(Path("./src/mdl/validation.json").read_text()))
