@@ -1,27 +1,18 @@
 # TODO: test 'alter_subcommand' and 'alter_subcommands' rules
-# TODO: test all grammar rules
 import json
-from pathlib import Path
 
 import pytest
 import msgspec
 
-from mdl.parser import Attribute, Component, Command, get_parser
+from mdl import Attribute, Component, Command
+from mdl.parser import get_parser
 
 
 @pytest.fixture
-def here():
-    return Path(__file__).parent
-
-
-@pytest.fixture
-def mdl_examples_dir(here):
-    return here / "mdl_examples"
-
-
-@pytest.fixture
-def component_metadata(here):
-    return json.loads((here.parent / "src" / "mdl" / "validation.json").read_text())
+def component_metadata(root_test_dir):
+    return json.loads(
+        (root_test_dir.parent / "src" / "mdl" / "validation.json").read_text()
+    )
 
 
 @pytest.fixture
