@@ -1,11 +1,9 @@
 from __future__ import annotations
-import json
 from pathlib import Path
-from typing import Callable, Generator, Literal, Self, TypeAlias, Type
+from typing import Callable, Generator, Literal, Self, TypeAlias
 
 from lark import Lark, Transformer, Tree
 import msgspec
-from msgspec import Struct
 
 from mdl.validation import comment_to_type
 
@@ -36,7 +34,7 @@ def get_parser(start: str) -> Lark:
 AttributeValue: TypeAlias = bool | int | float | str
 
 
-class Attribute(Struct):
+class Attribute(msgspec.Struct):
     name: str
     value: AttributeValue | list[AttributeValue] | None = None
     command: str | None = None
@@ -66,17 +64,6 @@ class Attribute(Struct):
     def dumps(self):
         return "".join(self.__parts__())
 
-    def validator(self, metadata: dict) -> Type:
-        value_type_annotation = comment_to_type(metadata["type_data"])
-        return msgspec.defstruct(
-            "ValidatedAttribute",
-            [
-                ("name", Literal[self.name]),
-                ("value", value_type_annotation),
-            ],
-            tag=self.name,
-        )
-
     def validate(
         self,
         metadata: dict,
@@ -89,19 +76,29 @@ class Attribute(Struct):
                 f"Attribute name {repr(self.name)} is not allowed under component type "
                 f"{repr(parent_component_type_name)}. Options are: {options}."
             )
-
-        encoded = msgspec.json.encode(self)
+        # Type annotation of attribute values (`self.value` in this context),
+        # is done by generating a `msgspec.Struct` with a single attribute `value`
+        # the type hint of which is auto-generated from the info parsed from
+        # https://developer.veevavault.com/mdl/components/
+        value_type_hint = comment_to_type(attribute_metadata["type_data"])
+        ValidatedAttribute = msgspec.defstruct(
+            "ValidatedAttribute", [("value", value_type_hint)]
+        )
+        # And since validation of a `msgspec.Struct` does not happen at runtime
+        # but decoding time, we have to pay a little round trip fare by first
+        # encoding `self` to JSON and then decoding it into `ValidatedAttribute`
         try:
-            msgspec.json.decode(encoded, type=self.validator(attribute_metadata))
+            msgspec.json.decode(msgspec.json.encode(self), type=ValidatedAttribute)
         except msgspec.ValidationError as e:
+            # TODO: try to improve this error message
             raise ValidationError(
                 f"Issue at attribute {repr(self.name)} under "
                 f"{repr(parent_component_type_name)}: {e}"
-            )
+            ) from e
         return True
 
 
-class Component(Struct):
+class Component(msgspec.Struct):
     component_type_name: str
     component_name: str
     attributes: list[Attribute] | None = None
@@ -119,11 +116,6 @@ class Component(Struct):
     def dumps(self):
         return "\n".join(self.__parts__())
 
-    def validator(self, metadata):
-        fields = [("component_type_name", Literal[self.component_type_name])]
-        struct = msgspec.defstruct("ValidatedComponent", fields)
-        return struct
-
     def validate(
         self, metadata: dict, parent_component_type_name: str
     ) -> Literal[True]:
@@ -135,20 +127,10 @@ class Component(Struct):
                 f"Component type {repr(ctn)} is not allowed under component type "
                 f"{repr(parent_component_type_name)}. Options are: {options}."
             )
-        encoded = msgspec.json.encode(self)
-        try:
-            msgspec.json.decode(
-                encoded, type=self.validator(component_metadata["attributes"])
-            )
-        except msgspec.ValidationError as e:
-            raise ValidationError(
-                f"Issue at {repr(ctn)} {repr(self.component_name)} "
-                f"under {repr(parent_component_type_name)}: {str(e).strip().strip('Object').strip()}"
-            )
         return all(a.validate(component_metadata, ctn) for a in self.attributes or [])
 
 
-class Command(Struct):
+class Command(msgspec.Struct):
     command: str
     component_type_name: str
     component_name: str
@@ -363,17 +345,3 @@ class MdlTreeTransformer(Transformer):
 
     def mdl_command(self, children) -> Command:
         return children[0]
-
-
-if __name__ == "__main__":
-    command = Command.loads(
-        (
-            Path(__file__).parent.parent.parent
-            / "tests"
-            / "mdl_examples"
-            / "validation.mdl"
-        ).read_text()
-    )
-    assert command.validate(
-        json.loads((Path(__file__).parent / "validation.json").read_text())
-    )
