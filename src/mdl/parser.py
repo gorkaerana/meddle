@@ -174,7 +174,6 @@ class Command(msgspec.Struct):
     def validate(
         self, metadata: dict, parent_component_type_name: str | None = None
     ) -> Literal[True]:
-        # TODO: massage parsed info into whatever's best
         ctn = self.component_type_name
         if parent_component_type_name is None:
             ctm = metadata.get(ctn)
