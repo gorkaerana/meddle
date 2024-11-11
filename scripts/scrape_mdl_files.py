@@ -2,6 +2,7 @@
 Scrapped all .mdl files under the "veeva" GitHub user. Requires "GITHUB_TOKEN"
 environment variable
 """
+
 from argparse import ArgumentParser
 from base64 import b64decode
 import json
@@ -9,8 +10,6 @@ import os
 from pathlib import Path
 
 import httpx
-
-from mdl import Command
 
 
 class GithubClient(httpx.Client):
@@ -67,11 +66,16 @@ def repo_files(url: str, github_client: GithubClient):
 
 def cli() -> Path:
     argument_parser = ArgumentParser()
-    argument_parser.add_argument("-o", "--out-dir", help="Directory in which to place scrapped MDL files.", required=True)
+    argument_parser.add_argument(
+        "-o",
+        "--out-dir",
+        help="Directory in which to place scrapped MDL files.",
+        required=True,
+    )
     arguments = argument_parser.parse_args()
     out_dir = Path(arguments.out_dir).resolve()
     return out_dir
-    
+
 
 def main(out_dir):
     outdir_to_url = {}
