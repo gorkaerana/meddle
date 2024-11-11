@@ -1,0 +1,107 @@
+RECREATE Objectlifecycle vsdk_product_trade_lifecycle__c (
+   label('vSDK Product Trade'),
+   state_labels('base:object_lifecycle:initial_state_type',
+      'base:object_lifecycle:complete_state_type'),
+   labeled_states('Objectlifecyclestate.pending_state__c',
+      'Objectlifecyclestate.NONE'),
+   active(true),
+   starting_state(),
+   description(),
+   Objectlifecyclestate in_use_state__c(
+      label('In Use'),
+      active(true),
+      record_inactive(),
+      record_status('active__v'),
+      description()
+   ),
+   Objectlifecyclestate off_market_state__c(
+      label('Off Market'),
+      active(true),
+      record_inactive(),
+      record_status('inactive__v'),
+      description()
+   ),
+   Objectlifecyclestate pending_state__c(
+      label('Pending'),
+      active(true),
+      record_inactive(),
+      record_status('active__v'),
+      description()
+   ),
+   Objectlifecyclestateuseraction in_use_state__c.change_state_to_off_market_useraction__c(
+      label('Change State to Off Market'),
+      rule({<?xml version="1.0" encoding="UTF-8"?>
+<rule><actions><action type="LIFECYCLE_STATE_CHANGE_ACTION" transitionState="Objectlifecyclestate.off_market_state__c" /></actions></rule>
+}),
+      order(1000)
+   ),
+   Objectlifecyclestateuseraction pending_state__c.change_state_to_in_use_useraction__c(
+      label('Change State to In Use'),
+      rule({<?xml version="1.0" encoding="UTF-8"?>
+<rule><actions><action type="LIFECYCLE_STATE_CHANGE_ACTION" transitionState="Objectlifecyclestate.in_use_state__c" /></actions></rule>
+}),
+      order(1000)
+   ),
+   Objectlifecyclerole owner__v(
+      active(true),
+      application_role('Applicationrole.owner__v'),
+      permissions()
+   ),
+   Objectlifecyclerole editor__v(
+      active(true),
+      application_role('Applicationrole.editor__v'),
+      permissions()
+   ),
+   Objectlifecyclerole viewer__v(
+      active(true),
+      application_role('Applicationrole.viewer__v'),
+      permissions()
+   ),
+   Objectlifecyclepermission owner_read__c(
+      states('Objectlifecyclestate.in_use_state__c',
+         'Objectlifecyclestate.off_market_state__c',
+         'Objectlifecyclestate.pending_state__c'),
+      role('Objectlifecyclerole.owner__v'),
+      permission('Read')
+   ),
+   Objectlifecyclepermission owner_edit__c(
+      states('Objectlifecyclestate.off_market_state__c',
+         'Objectlifecyclestate.pending_state__c'),
+      role('Objectlifecyclerole.owner__v'),
+      permission('Edit')
+   ),
+   Objectlifecyclepermission owner_delete__c(
+      states('Objectlifecyclestate.off_market_state__c',
+         'Objectlifecyclestate.pending_state__c'),
+      role('Objectlifecyclerole.owner__v'),
+      permission('Delete')
+   ),
+   Objectlifecyclepermission editor_read__c(
+      states('Objectlifecyclestate.in_use_state__c',
+         'Objectlifecyclestate.off_market_state__c',
+         'Objectlifecyclestate.pending_state__c'),
+      role('Objectlifecyclerole.editor__v'),
+      permission('Read')
+   ),
+   Objectlifecyclepermission editor_edit__c(
+      states('Objectlifecyclestate.in_use_state__c',
+         'Objectlifecyclestate.off_market_state__c',
+         'Objectlifecyclestate.pending_state__c'),
+      role('Objectlifecyclerole.editor__v'),
+      permission('Edit')
+   ),
+   Objectlifecyclepermission editor_delete__c(
+      states('Objectlifecyclestate.in_use_state__c',
+         'Objectlifecyclestate.off_market_state__c',
+         'Objectlifecyclestate.pending_state__c'),
+      role('Objectlifecyclerole.editor__v'),
+      permission('Delete')
+   ),
+   Objectlifecyclepermission viewer_read__c(
+      states('Objectlifecyclestate.in_use_state__c',
+         'Objectlifecyclestate.off_market_state__c',
+         'Objectlifecyclestate.pending_state__c'),
+      role('Objectlifecyclerole.viewer__v'),
+      permission('Read')
+   )
+);

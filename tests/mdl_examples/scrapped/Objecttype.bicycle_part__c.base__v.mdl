@@ -1,0 +1,54 @@
+RECREATE Objecttype bicycle_part__c.base__v (
+   label('Base Bicycle Part'),
+   label_plural('Base Bicycle Parts'),
+   active(true),
+   additional_type_validations(),
+   Typefield id(
+      source('standard'),
+      required(false)
+   ),
+   Typefield global_id__sys(
+      source('standard'),
+      required(false)
+   ),
+   Typefield link__sys(
+      source('standard'),
+      required(false)
+   ),
+   Typefield name__v(
+      source('standard'),
+      required(true)
+   ),
+   Typefield status__v(
+      source('standard'),
+      required(true)
+   ),
+   Typefield created_by__v(
+      source('standard'),
+      required(false)
+   ),
+   Typefield created_date__v(
+      source('standard'),
+      required(false)
+   ),
+   Typefield modified_by__v(
+      source('standard'),
+      required(false)
+   ),
+   Typefield modified_date__v(
+      source('standard'),
+      required(false)
+   ),
+   Typefield bicycle_part_manufacturer__c(
+      source('standard'),
+      required(true)
+   ),
+   Typefield price__c(
+      source('standard'),
+      required(false)
+   ),
+   Typefield quantity__c(
+      source('standard'),
+      required(false)
+   )
+);

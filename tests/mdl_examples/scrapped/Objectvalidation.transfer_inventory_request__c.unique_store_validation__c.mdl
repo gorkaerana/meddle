@@ -1,0 +1,9 @@
+RECREATE Objectvalidation transfer_inventory_request__c.unique_store_validation__c (
+   label('Unique Store Validation'),
+   active(true),
+   expression('existing_bicycle_store__cr.global_id__sys != new_bicycle_store__cr.global_id__sys'),
+   description(),
+   error_message('Existing and New Bicycle Store must not be the same'),
+   error_location('existing_bicycle_store__c',
+      'new_bicycle_store__c')
+);

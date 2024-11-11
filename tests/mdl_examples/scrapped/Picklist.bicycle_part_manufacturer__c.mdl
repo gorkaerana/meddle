@@ -1,0 +1,19 @@
+RECREATE Picklist bicycle_part_manufacturer__c (
+   label('Bicycle Part Manufacturer'),
+   active(true),
+   Picklistentry nitro_racing_bicycle_parts__c(
+      value('Nitro Racing Bicycle Parts'),
+      order(0),
+      active(true)
+   ),
+   Picklistentry speedracer_bicycle_parts__c(
+      value('SpeedRacer Bicycle Parts'),
+      order(1),
+      active(true)
+   ),
+   Picklistentry xcycle_parts__c(
+      value('XCycle Parts'),
+      order(2),
+      active(true)
+   )
+);

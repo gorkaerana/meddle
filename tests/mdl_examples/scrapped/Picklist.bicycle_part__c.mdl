@@ -1,0 +1,44 @@
+RECREATE Picklist bicycle_part__c (
+   label('Bicycle Part'),
+   active(true),
+   Picklistentry nitro_racing_bicycle_brakes__c(
+      value('Nitro Racing Bicycle Brakes'),
+      order(0),
+      active(true)
+   ),
+   Picklistentry nitro_racing_bicycle_light__c(
+      value('Nitro Racing Bicycle Light'),
+      order(1),
+      active(true)
+   ),
+   Picklistentry nitro_racing_bicycle_light1__c(
+      value('Nitro Racing Bicycle Light'),
+      order(2),
+      active(false)
+   ),
+   Picklistentry speedracer_racing_bicycle_chain__c(
+      value('SpeedRacer Racing Bicycle Chain'),
+      order(3),
+      active(true)
+   ),
+   Picklistentry speedracer_racing_bicycle_gears__c(
+      value('SpeedRacer Racing Bicycle Gears'),
+      order(4),
+      active(true)
+   ),
+   Picklistentry xcycle_bicycle_pedals__c(
+      value('XCycle Bicycle Pedals'),
+      order(5),
+      active(true)
+   ),
+   Picklistentry xcycle_comfort_seat__c(
+      value('XCycle Comfort Seat'),
+      order(6),
+      active(true)
+   ),
+   Picklistentry xcycle_electric_bicycle_conversion_kit__c(
+      value('XCycle Electric Bicycle Conversion Kit'),
+      order(7),
+      active(true)
+   )
+);

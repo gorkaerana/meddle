@@ -1,0 +1,4 @@
+RECREATE Picklist vsdk_product_family__c (
+   label('vSDK Product Family'),
+   active(true)
+);

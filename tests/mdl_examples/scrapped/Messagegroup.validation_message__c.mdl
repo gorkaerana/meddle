@@ -1,0 +1,22 @@
+RECREATE Messagegroup validation_message__c (
+   label('Validation Message'),
+   active(true),
+   Message out_of_stock__c(
+      label(),
+      active(true),
+      default_value('This product is out of stock.'),
+      system_managed(false)
+      ),
+   Message order_quantity_exceeds_stock__c(
+      label(),
+      active(true),
+      default_value('Order Quantity exceeds Stock.'),
+      system_managed(false)
+      ),
+   Message product_does_not_exist__c(
+      label(),
+      active(true),
+      default_value('Product with specified manufacturer does not exist.'),
+      system_managed(false)
+      )
+   );
