@@ -1,4 +1,5 @@
 from __future__ import annotations
+import json
 from pathlib import Path
 from typing import Callable, Generator, Literal, Self, TypeAlias
 
@@ -19,7 +20,8 @@ class ValidationError(Exception):
     pass
 
 
-mdl_grammar = (Path(__file__).parent / "mdl_grammar.lark").read_text()
+here = Path(__file__).parent
+mdl_grammar = (here / "mdl_grammar.lark").read_text()
 
 
 def get_parser(start: str) -> Lark:
@@ -172,9 +174,13 @@ class Command(msgspec.Struct):
         return "\n".join(self.__parts__())
 
     def validate(
-        self, metadata: dict, parent_component_type_name: str | None = None
+        self,
+        metadata: dict | None = None,
+        parent_component_type_name: str | None = None,
     ) -> Literal[True]:
         ctn = self.component_type_name
+        if metadata is None:
+            metadata = json.loads((here / "validation.json").read_text())
         if parent_component_type_name is None:
             ctm = metadata.get(ctn)
             if ctm is None:

@@ -233,7 +233,7 @@ dependencies = [
     { name = "msgspec" },
 ]
 
-[package.dependency-groups]
+[package.dev-dependencies]
 dev = [
     { name = "beautifulsoup4" },
     { name = "httpx" },
@@ -250,7 +250,7 @@ requires-dist = [
     { name = "msgspec", specifier = ">=0.18.6" },
 ]
 
-[package.metadata.dependency-groups]
+[package.metadata.requires-dev]
 dev = [
     { name = "beautifulsoup4", specifier = ">=4.12.3" },
     { name = "httpx", specifier = ">=0.27.2" },
