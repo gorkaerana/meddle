@@ -38,7 +38,7 @@ component : component_type_name component_name "(" attributes ")"
 
 component_type_name : /[A-Z][a-z]+/
 
-component_name : /[a-z0-9_]+/
+component_name : /[a-z0-9_\.]+/
 
 attributes : attribute ("," attribute)* ","?
 
@@ -52,10 +52,13 @@ drop : "DROP"
 
 attribute : attribute_name "(" attribute_value ")"
 
-attribute_name : /[a-z_]+/
+attribute_name : /[a-z0-9_]+/
 
 attribute_value : value? ("," value)*
 
+# TODO: support XML value
+# TODO: support SDK code value
+# TODO: support expression value
 value : boolean
     | string
     | number
