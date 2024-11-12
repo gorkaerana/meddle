@@ -56,7 +56,6 @@ attribute_name : /[a-z0-9_]+/
 
 attribute_value : value? ("," value)*
 
-# TODO: support XML value
 # TODO: support SDK code value
 # TODO: support expression value
 value : xml
