@@ -55,10 +55,8 @@ def grammar(mdl_grammar_path) -> Grammar:
 
 
 def test_rule_definitions(grammar, rule_definitions):
-    # TODO: use `lark.load_grammar` here instead of own `get_parser`
     assert sorted(td[0] for td in grammar.rule_defs) == rule_definitions
 
 
 def test_term_definitions(grammar, term_definitions):
-    # TODO: use `lark.load_grammar` here instead of own `get_parser`
     assert sorted(td[0] for td in grammar.term_defs) == term_definitions
