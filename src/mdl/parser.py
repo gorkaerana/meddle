@@ -1,7 +1,8 @@
 from __future__ import annotations
 import json
+from collections import deque
 from pathlib import Path
-from typing import Callable, Generator, Literal, Self, TypeAlias
+from typing import Any, Callable, Generator, Iterable, Literal, Self, TypeAlias
 import xml.etree.ElementTree as ET
 
 from lark import Lark, Transformer, Tree
@@ -23,6 +24,21 @@ class ValidationError(Exception):
 
 here = Path(__file__).parent
 mdl_grammar = (here / "mdl_grammar.lark").read_text()
+
+
+def mark_first_and_last(iterable: Iterable) -> tuple[bool, bool, Any]:
+    iterable = iter(iterable)
+    buffer_ = deque(maxlen=1)
+    buffer_.append((True, False, next(iterable)))
+    while True:
+        try:
+            next_value = next(iterable)
+            yield buffer_.pop()
+            buffer_.append((False, False, next_value))
+        except StopIteration:
+            *_, value = buffer_.pop()
+            yield (False, True, value)
+            break
 
 
 def get_parser(start: str) -> Lark:
@@ -66,7 +82,12 @@ class Attribute(msgspec.Struct):
             yield repr(self.value)[1:-1]
         else:
             # TODO: support correct dumping of multiline strings
-            yield repr(self.value)
+            string_lines = self.value.splitlines()
+            if len(string_lines) == 1:
+                yield repr(self.value)
+            else:
+                for first, last, line in mark_first_and_last(string_lines):
+                    yield f"{'\'' * first}{line}{'\'' * last}{'\n' * (not last)}"
         yield ")"
 
     def dumps(self):
