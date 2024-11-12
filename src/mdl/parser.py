@@ -65,6 +65,7 @@ class Attribute(msgspec.Struct):
         elif isinstance(self.value, list):
             yield repr(self.value)[1:-1]
         else:
+            # TODO: support correct dumping of multiline strings
             yield repr(self.value)
         yield ")"
 
