@@ -1,7 +1,5 @@
 import re
-from functools import reduce
-from operator import or_
-from typing import Annotated, Any, Literal, Type, TypeAlias
+from typing import Annotated, Any, Literal, Type
 
 import msgspec
 
@@ -43,69 +41,3 @@ def comment_to_type(comment: str) -> Type:
         }
         type_ = Annotated[type_, msgspec.Meta(**annotation_metadata)] | None
     return type_
-
-
-AttributeName: TypeAlias = str
-
-
-def make_attribute_structs(
-    attributes: dict[AttributeName, dict[Literal["type_data", "description"], str]],
-) -> Type:
-    structs = []
-    for attribute_name, d in attributes.items():
-        # TODO: inject description in `Annotated` via `msgspec.Meta`'s `description` argument
-        s = msgspec.defstruct(
-            "Attribute",
-            [
-                ("name", Literal[attribute_name]),
-                ("value", comment_to_type(d["type_data"])),
-            ],
-            tag=f"attribute_{attribute_name}",
-        )
-        structs.append(s)
-    return reduce(or_, structs)
-
-
-ComponentName: TypeAlias = str
-
-
-def make_component_structs(
-    components: dict[ComponentName, dict[Literal["attributes", "subcomponents"], dict]],
-) -> Type | None:
-    structs = []
-    for component_type_name, d in components.items():
-        s = msgspec.defstruct(
-            "Component",
-            [
-                ("component_type_name", Literal[component_type_name]),
-                ("attributes", list[make_attribute_structs(d["attributes"])]),
-            ],
-            tag=f"component_{component_type_name}",
-        )
-        structs.append(s)
-    return reduce(or_, structs) if structs else None
-
-
-def make_command_structs(
-    components: dict[ComponentName, dict[Literal["attributes", "subcomponents"], dict]],
-) -> Type | None:
-    structs = []
-    for component_type_name, d in components.items():
-        commands_type_annotation = make_command_structs(d["subcomponents"])
-        s = msgspec.defstruct(
-            "Command",
-            [
-                ("component_type_name", Literal[component_type_name]),
-                ("attributes", list[make_attribute_structs(d["attributes"])]),
-                ("components", list[make_component_structs(d["subcomponents"])]),
-                (
-                    "commands",
-                    None
-                    if commands_type_annotation is None
-                    else list[commands_type_annotation],
-                ),
-            ],
-            tag=f"command_{component_type_name}",
-        )
-        structs.append(s)
-    return reduce(or_, structs) if structs else None
