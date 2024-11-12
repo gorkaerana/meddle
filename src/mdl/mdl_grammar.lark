@@ -59,14 +59,18 @@ attribute_value : value? ("," value)*
 # TODO: support XML value
 # TODO: support SDK code value
 # TODO: support expression value
-value : boolean
+value : xml
+    | boolean
     | string
     | number
 
+// `(?!')` avoids from matching `'`, cause `+` is a greedy operator
 // `| "''"` needed cause the Lark lexer does not allow zero-width terminals
 string : "'" /((?!').)+/ "'" | "''"
 number : INT | DECIMAL
 boolean : true | false
+// `(?!\})` avoids from matching `}`, cause `+` is a greedy operator
+xml : "{" /((?!\}).)+/s "}"
 
 true : "true"
 false : "false"

@@ -36,6 +36,7 @@ def rule_definitions():
         "string",
         "true",
         "value",
+        "xml",
     ]
 
 
