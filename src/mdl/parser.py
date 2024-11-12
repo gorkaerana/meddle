@@ -28,8 +28,7 @@ mdl_grammar = (here / "mdl_grammar.lark").read_text()
 
 def mark_first_and_last(iterable: Iterable) -> tuple[bool, bool, Any]:
     iterable = iter(iterable)
-    buffer_ = deque(maxlen=1)
-    buffer_.append((True, False, next(iterable)))
+    buffer_ = deque([(True, False, next(iterable))], maxlen=1)
     while True:
         try:
             next_value = next(iterable)
