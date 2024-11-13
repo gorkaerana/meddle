@@ -52,8 +52,8 @@ def comment_to_type(comment: str) -> Type:
         # is not a valid msgspec type constraing
         return Annotated[str, msgspec.Meta(pattern=rf"^{matched_type_name}\.")] | None
     if (allow_multiple_vals_match is not None) and (allowed_vals_match is not None):
-        values = [s for s in allowed_vals_match.groups(0)[0].split("|") if s]
-        return list[Literal[*values]] | Literal[*values] | None
+        allowed_values = [s for s in allowed_vals_match.groups(0)[0].split("|") if s]
+        return list[Literal[*allowed_values]] | Literal[*allowed_values] | None
     elif allow_multiple_vals_match is not None:
         return list[type_] | type_ | None
     elif allowed_vals_match is not None:
