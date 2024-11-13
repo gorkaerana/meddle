@@ -44,6 +44,7 @@ def is_component_reference(matched_type_name: str) -> bool:
 
 
 def comment_to_type(comment: str) -> Type:
+    # TODO: support required
     supported_types = {
         "String": str,
         "Boolean": bool,
