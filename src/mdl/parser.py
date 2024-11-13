@@ -3,7 +3,6 @@ import json
 from collections import deque
 from pathlib import Path
 from typing import Any, Callable, Generator, Iterable, Literal, Self, TypeAlias
-import xml.etree.ElementTree as ET
 
 from lark import Lark, Transformer, Tree
 import msgspec
@@ -71,10 +70,6 @@ class Attribute(msgspec.Struct):
         yield "("
         if self.value is None:
             yield ""
-        elif isinstance(self.value, ET.Element):
-            # TODO: how close do we want to match this dumping w.r.t. the
-            # original one?
-            yield ET.tostring(self.value).decode()
         elif isinstance(self.value, bool):
             yield str(self.value).lower()
         elif isinstance(self.value, list):
@@ -116,7 +111,8 @@ class Attribute(msgspec.Struct):
         # but decoding time, we have to pay a little round trip fare by first
         # encoding `self` to JSON and then decoding it into `ValidatedAttribute`
         try:
-            msgspec.json.decode(msgspec.json.encode(self), type=ValidatedAttribute)
+            encoded = msgspec.json.encode(self)
+            msgspec.json.decode(encoded, type=ValidatedAttribute)
         except msgspec.ValidationError as e:
             # TODO: try to improve this error message
             raise ValidationError(
@@ -275,9 +271,9 @@ def generic_command(
 
 class MdlTreeTransformer(Transformer):
     def xml(self, children):
-        # TODO: maybe we want to read `xml_declarations` and the like?
+        # TODO: support properly instead of just reading into a string
         assert len(children) == 1, "A 'xml' branch can only have a single children"
-        return ET.fromstring(children[0].value)
+        return children[0].value
 
     def boolean(self, children) -> bool:
         assert len(children) == 1, "A 'boolean' branch can only have a single children"
