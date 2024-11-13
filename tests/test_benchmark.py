@@ -10,11 +10,7 @@ path_name = attrgetter("name")
 # "ADD" and "MODIFY" commands are only allowed as subcommands under
 # "ALTER" MDL command
 mdl_files = sorted(
-    (
-        p
-        for p in Path(__file__).parent.rglob("*.mdl")
-        if p.name not in {"add.mdl", "modify.mdl"}
-    ),
+    (Path(__file__).parent / "mdl_examples" / "scrapped").rglob("*.mdl"),
     key=path_name,
 )
 
