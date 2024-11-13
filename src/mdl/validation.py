@@ -57,6 +57,8 @@ def comment_to_type(comment: str) -> Type:
         if enum_match is None
         else [s for s in enum_match.groups(0)[0].split("|") if s]
     )
+    type_ = supported_types.get(matched_type_name)
+    is_type_supported = type_ is not None
     # I believe two things are worth pointing out:
     # 1. All attribute values seem to be nullable, hence the `None` at every return.
     # PLenty of examples under `tests/mdl_examples/scrapped`.
@@ -64,7 +66,7 @@ def comment_to_type(comment: str) -> Type:
     # the parser will parse it as a single value, hence the `list[a_type] | a_type`
     # pattern below.
     match (
-        supported_types.get(matched_type_name),
+        is_type_supported,
         is_component_reference(matched_type_name),
         is_enum(comment),
         is_multi_value(comment),
@@ -75,33 +77,36 @@ def comment_to_type(comment: str) -> Type:
         ),
     ):
         # Reference to other components
-        case (None, True, _, _, _):
-            # TODO: this current validation implementation does not allow to validate a list
-            # of references, as Annotated[list[str], msgspec.Meta(pattern=rf"^{matched_type_name}\.")]
-            # is not a valid msgspec type constraint
+        case (False, True, False, False, _):
             return (
                 Annotated[str, msgspec.Meta(pattern=rf"^{matched_type_name}\.")] | None
             )
+        # # Multi-value reference to other components
+        # case (False, True, False, True, _):
+        #     # TODO: this current validation implementation does not allow to validate a list
+        #     # of references, as Annotated[list[str], msgspec.Meta(pattern=rf"^{matched_type_name}\.")]
+        #     # is not a valid msgspec type constraint
         # Multi-value enum
-        case (_, _, True, True, _):
+        case (True, False, True, True, _):
             return list[Literal[*allowed_values]] | Literal[*allowed_values] | None
-        # Multi-value
-        case (type_, _, False, True, _):
+        # Multi-value non-enum
+        case (True, False, False, True, _):
             return list[type_] | type_ | None
         # Enum
-        case (_, _, True, False, _):
+        case (True, False, True, False, _):
             return Literal[*allowed_values] | None
         # Constraints
-        case (type_, _, _, _, constraints) if (type_ is not None) and any(
+        case (True, False, False, False, constraints) if any(
             m is not None for _, m in constraints
         ):
             annotation_metadata = {
                 k: int(m.groups(0)[0]) for k, m in constraints if m is not None
             }
             return Annotated[type_, msgspec.Meta(**annotation_metadata)] | None
-        case (type_, _, _, _, _) if type_ is not None:
+        case (True, False, False, False, _):
             return type_ | None
         # Fallback
         case _:
             # TODO: perhaps handle the rest differently?
+            print(comment)
             return Any | None
