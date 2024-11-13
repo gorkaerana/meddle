@@ -6,6 +6,10 @@ from typing import Annotated, Any, Literal, Type
 import msgspec
 
 
+class ImpossibleComponent(Exception):
+    pass
+
+
 component_type_metadata = json.loads(
     (Path(__file__).parent / "validation.json").read_text()
 )
@@ -77,13 +81,13 @@ def comment_to_type(comment: str) -> Type:
         ),
     ):
         case (True, True, True, True, _):
-            return Any | None
+            raise ImpossibleComponent(repr((True, True, True, True)))
         case (True, True, True, False, _):
-            return Any | None
+            raise ImpossibleComponent(repr((True, True, True, False)))
         case (True, True, False, True, _):
-            return Any | None
+            raise ImpossibleComponent(repr((True, True, False, True)))
         case (True, True, False, False, _):
-            return Any | None
+            raise ImpossibleComponent(repr((True, True, False, False)))
         # Multi-value enum
         case (True, False, True, True, _):
             return list[Literal[*allowed_values]] | Literal[*allowed_values] | None
@@ -104,9 +108,9 @@ def comment_to_type(comment: str) -> Type:
         case (True, False, False, False, _):
             return type_ | None
         case (False, True, True, True, _):
-            return Any | None
+            raise ImpossibleComponent(repr((False, True, True, True)))
         case (False, True, True, False, _):
-            return Any | None
+            raise ImpossibleComponent(repr((False, True, True, False)))
         # Multi-value reference to other components
         case (False, True, False, True, _):
             # TODO: this current validation implementation does not allow to validate a list
@@ -119,10 +123,10 @@ def comment_to_type(comment: str) -> Type:
                 Annotated[str, msgspec.Meta(pattern=rf"^{matched_type_name}\.")] | None
             )
         case (False, False, True, True, _):
-            return Any | None
+            raise ImpossibleComponent(repr((False, False, True, True)))
         case (False, False, True, False, _):
-            return Any | None
+            raise ImpossibleComponent(repr((False, False, True, False)))
         case (False, False, False, True, _):
-            return Any | None
+            raise ImpossibleComponent(repr((False, False, False, True)))
         case (False, False, False, False, _):
-            return Any | None
+            raise ImpossibleComponent(repr((False, False, False, False)))
