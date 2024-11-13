@@ -76,25 +76,23 @@ def comment_to_type(comment: str) -> Type:
             ("le", MAX_VAL_PATTERN.search(comment)),
         ),
     ):
-        # Reference to other components
-        case (False, True, False, False, _):
-            return (
-                Annotated[str, msgspec.Meta(pattern=rf"^{matched_type_name}\.")] | None
-            )
-        # # Multi-value reference to other components
-        # case (False, True, False, True, _):
-        #     # TODO: this current validation implementation does not allow to validate a list
-        #     # of references, as Annotated[list[str], msgspec.Meta(pattern=rf"^{matched_type_name}\.")]
-        #     # is not a valid msgspec type constraint
+        case (True, True, True, True, _):
+            return Any | None
+        case (True, True, True, False, _):
+            return Any | None
+        case (True, True, False, True, _):
+            return Any | None
+        case (True, True, False, False, _):
+            return Any | None
         # Multi-value enum
         case (True, False, True, True, _):
             return list[Literal[*allowed_values]] | Literal[*allowed_values] | None
-        # Multi-value non-enum
-        case (True, False, False, True, _):
-            return list[type_] | type_ | None
         # Enum
         case (True, False, True, False, _):
             return Literal[*allowed_values] | None
+        # Multi-value non-enum
+        case (True, False, False, True, _):
+            return list[type_] | type_ | None
         # Constraints
         case (True, False, False, False, constraints) if any(
             m is not None for _, m in constraints
@@ -105,8 +103,26 @@ def comment_to_type(comment: str) -> Type:
             return Annotated[type_, msgspec.Meta(**annotation_metadata)] | None
         case (True, False, False, False, _):
             return type_ | None
-        # Fallback
-        case _:
-            # TODO: perhaps handle the rest differently?
-            print(comment)
+        case (False, True, True, True, _):
+            return Any | None
+        case (False, True, True, False, _):
+            return Any | None
+        # Multi-value reference to other components
+        case (False, True, False, True, _):
+            # TODO: this current validation implementation does not allow to validate a list
+            # of references, as Annotated[list[str], msgspec.Meta(pattern=rf"^{matched_type_name}\.")]
+            # is not a valid msgspec type constraint
+            return Any | None
+        # Reference to other components
+        case (False, True, False, False, _):
+            return (
+                Annotated[str, msgspec.Meta(pattern=rf"^{matched_type_name}\.")] | None
+            )
+        case (False, False, True, True, _):
+            return Any | None
+        case (False, False, True, False, _):
+            return Any | None
+        case (False, False, False, True, _):
+            return Any | None
+        case (False, False, False, False, _):
             return Any | None
