@@ -103,6 +103,5 @@ def comment_to_type(comment: str) -> Type:
             return type_ | None
         # Fallback
         case _:
-            print(type_, comment)
             # TODO: perhaps handle the rest differently?
             return Any | None
