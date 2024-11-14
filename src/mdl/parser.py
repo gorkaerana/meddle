@@ -1,5 +1,4 @@
 from __future__ import annotations
-import json
 from collections import deque
 from pathlib import Path
 from typing import Any, Callable, Generator, Iterable, Literal, Self, TypeAlias
@@ -7,17 +6,17 @@ from typing import Any, Callable, Generator, Iterable, Literal, Self, TypeAlias
 from lark import Lark, Transformer, Tree
 import msgspec
 
-from mdl.validation import comment_to_type
+from mdl.validation import (
+    ValidationError,
+    component_type_metadata,
+    type_check_attribute,
+)
 
 
 INDENT = " " * 4
 
 
 class Unreachable(Exception):
-    pass
-
-
-class ValidationError(Exception):
     pass
 
 
@@ -98,27 +97,9 @@ class Attribute(msgspec.Struct):
                 f"Attribute name {repr(self.name)} is not allowed under component type "
                 f"{repr(parent_component_type_name)}. Options are: {options}."
             )
-        # Type annotation of attribute values (`self.value` in this context),
-        # is done by generating a `msgspec.Struct` with a single attribute `value`
-        # the type hint of which is auto-generated from the info parsed from
-        # https://developer.veevavault.com/mdl/components/
-        value_type_hint = comment_to_type(attribute_metadata["type_data"])
-        ValidatedAttribute = msgspec.defstruct(
-            "ValidatedAttribute", [("value", value_type_hint)]
+        return type_check_attribute(
+            self.name, self.value, attribute_metadata["type_data"]
         )
-        # And since validation of a `msgspec.Struct` does not happen at runtime
-        # but decoding time, we have to pay a little round trip fare by first
-        # encoding `self` to JSON and then decoding it into `ValidatedAttribute`
-        try:
-            encoded = msgspec.json.encode(self)
-            msgspec.json.decode(encoded, type=ValidatedAttribute)
-        except msgspec.ValidationError as e:
-            # TODO: try to improve this error message
-            raise ValidationError(
-                f"Issue at attribute {repr(self.name)} under "
-                f"{repr(parent_component_type_name)}: {e}"
-            ) from e
-        return True
 
 
 class Component(msgspec.Struct):
@@ -200,12 +181,13 @@ class Command(msgspec.Struct):
         parent_component_type_name: str | None = None,
     ) -> Literal[True]:
         ctn = self.component_type_name
-        if metadata is None:
-            metadata = json.loads((here / "validation.json").read_text())
+        metadata = component_type_metadata if metadata is None else metadata
+        # Top-level command
         if parent_component_type_name is None:
             ctm = metadata.get(ctn)
             if ctm is None:
                 raise ValidationError(f"Component type {repr(ctm)} does not exist.")
+        # We are below another command
         else:
             ctm = metadata["subcomponents"].get(ctn)
             if ctm is None:

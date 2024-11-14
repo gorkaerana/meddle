@@ -1,9 +1,11 @@
 import json
 import re
 from pathlib import Path
-from typing import Annotated, Any, Literal, Type
+from typing import Any, Callable, Literal
 
-import msgspec
+
+class ValidationError(Exception):
+    pass
 
 
 class ImpossibleComponent(Exception):
@@ -23,12 +25,28 @@ MIN_VAL_PATTERN = re.compile(r"Minimum value : (.*)")
 MAX_VAL_PATTERN = re.compile(r"Maximum value : (.*)")
 
 
+CONSTRAINT_FUNCTIONS: dict[
+    Literal["maximum length", "minimum value", "maximum value"],
+    Callable[[int], Callable[[int | list], bool]],
+] = {
+    "maximum length": lambda bound: lambda list_: len(list_) <= bound,
+    "minimum value": lambda bound: lambda value: value >= bound,
+    "maximum value": lambda bound: lambda value: value <= bound,
+}
+
+
 def is_enum(s: str) -> bool:
     return ENUM_PATTERN.search(s) is not None
 
 
 def is_multi_value(s: str) -> bool:
     return MULTI_VALUE_PATTERN.search(s) is not None
+
+
+def is_generic_component_reference(matched_type_name: str) -> bool:
+    return (matched_type_name == "ComponentReference") or (
+        matched_type_name == "SubcomponentReference"
+    )
 
 
 def is_component_reference(matched_type_name: str) -> bool:
@@ -43,91 +61,109 @@ def is_component_reference(matched_type_name: str) -> bool:
     )
 
 
-def comment_to_type(comment: str) -> Type:
-    # TODO: support required
-    supported_types = {
-        "String": str,
-        "Boolean": bool,
-        "Number": int,
-        "LongString": str,
-        "Enum": Literal,
-        "XMLString": str,  # TODO: properly support
-    }
-    type_match = TYPE_PATTERN.search(comment)
-    assert type_match is not None, "Type info should always be provided"
+VEEVA_DOC_TO_PYTHON_TYPE = {
+    "String": str,
+    "Boolean": bool,
+    "Number": int,
+    "LongString": str,
+    "Enum": Literal,
+    "XMLString": str,  # TODO: properly support
+}
+
+
+# Ideally we would pass the whole attribute, but type hinting it would cause
+# a circular import
+def type_check_attribute(name: str, value: Any, type_data: str):
+    if value is None:
+        # All attribute values seem to be nullable.
+        # Plenty of examples under `tests/mdl_examples/scrapped`.
+        return True
+    type_match = TYPE_PATTERN.search(type_data)
+    assert (
+        type_match is not None
+    ), "Attribute value type info should always be provided in Veeva documentation"
     matched_type_name = type_match.groups(0)[0]
-    enum_match = ENUM_PATTERN.search(comment)
+    enum_match = ENUM_PATTERN.search(type_data)
     allowed_values = (
-        []
+        set()
         if enum_match is None
-        else [s for s in enum_match.groups(0)[0].split("|") if s]
+        else {s for s in enum_match.groups(0)[0].split("|") if s}
     )
-    type_ = supported_types.get(matched_type_name)
+    type_ = VEEVA_DOC_TO_PYTHON_TYPE.get(matched_type_name)
     is_type_supported = type_ is not None
-    # I believe two things are worth pointing out:
-    # 1. All attribute values seem to be nullable, hence the `None` at every return.
-    # PLenty of examples under `tests/mdl_examples/scrapped`.
-    # 2. If an attribute value "allows multiple values", and it contains one item;
-    # the parser will parse it as a single value, hence the `list[a_type] | a_type`
-    # pattern below.
     match (
         is_type_supported,
+        is_generic_component_reference(matched_type_name),
         is_component_reference(matched_type_name),
-        is_enum(comment),
-        is_multi_value(comment),
+        is_enum(type_data),
+        is_multi_value(type_data),
         (
-            ("max_length", MAX_LEN_PATTERN.search(comment)),
-            ("ge", MIN_VAL_PATTERN.search(comment)),
-            ("le", MAX_VAL_PATTERN.search(comment)),
+            ("maximum length", MAX_LEN_PATTERN.search(type_data)),
+            ("minimum value", MIN_VAL_PATTERN.search(type_data)),
+            ("maximum value", MAX_VAL_PATTERN.search(type_data)),
         ),
     ):
-        case (True, True, True, True, _):
-            raise ImpossibleComponent(repr((True, True, True, True)))
-        case (True, True, True, False, _):
-            raise ImpossibleComponent(repr((True, True, True, False)))
-        case (True, True, False, True, _):
-            raise ImpossibleComponent(repr((True, True, False, True)))
-        case (True, True, False, False, _):
-            raise ImpossibleComponent(repr((True, True, False, False)))
         # Multi-value enum
-        case (True, False, True, True, _):
-            return list[Literal[*allowed_values]] | Literal[*allowed_values] | None
+        case (True, False, False, True, True, _):
+            for e in value if isinstance(value, list) else [value]:
+                if e not in allowed_values:
+                    raise ValidationError(
+                        f"Attribute {repr(name)} is a multi-value enum with allowed values {', '.join(repr(v) for v in allowed_values)}. Got {repr(e)}"
+                    )
         # Enum
-        case (True, False, True, False, _):
-            return Literal[*allowed_values] | None
+        case (True, False, False, True, False, _):
+            if value not in allowed_values:
+                raise ValidationError(
+                    f"Attribute {repr(name)} is an enum with allowed values {', '.join(repr(v) for v in allowed_values)}. Got {repr(value)}"
+                )
         # Multi-value non-enum
-        case (True, False, False, True, _):
-            return list[type_] | type_ | None
+        case (True, False, False, False, True, _):
+            for e in value if isinstance(value, list) else [value]:
+                if not isinstance(e, type_):
+                    raise ValidationError(
+                        f"Attribute {repr(name)} is a multi-value and ought to be of type {repr(matched_type_name)}. Got {repr(e)} which is of type {repr(type(e))}"
+                    )
         # Constraints
-        case (True, False, False, False, constraints) if any(
+        case (True, False, False, False, False, constraints) if any(
             m is not None for _, m in constraints
         ):
-            annotation_metadata = {
-                k: int(m.groups(0)[0]) for k, m in constraints if m is not None
-            }
-            return Annotated[type_, msgspec.Meta(**annotation_metadata)] | None
-        case (True, False, False, False, _):
-            return type_ | None
-        case (False, True, True, True, _):
-            raise ImpossibleComponent(repr((False, True, True, True)))
-        case (False, True, True, False, _):
-            raise ImpossibleComponent(repr((False, True, True, False)))
+            for k, match_ in (t for t in constraints if t[1] is not None):
+                bound = int(match_.groups(0)[0])
+                f = CONSTRAINT_FUNCTIONS[k](bound)
+                if not f(value):
+                    raise ValidationError(
+                        f"Attribute {repr(name)} is constrained to {k} {bound}. Got {repr(value)}."
+                    )
+        case (True, False, False, False, False, _):
+            if not isinstance(value, type_):
+                raise ValidationError(
+                    f"Attribute {repr(name)} ought to be of type {repr(matched_type_name)}. Got {repr(value)} which is of type {repr(type(value))}"
+                )
         # Multi-value reference to other components
-        case (False, True, False, True, _):
-            # TODO: this current validation implementation does not allow to validate a list
-            # of references, as Annotated[list[str], msgspec.Meta(pattern=rf"^{matched_type_name}\.")]
-            # is not a valid msgspec type constraint
-            return Any | None
+        case (False, False, True, False, True, _):
+            for e in value if isinstance(value, list) else [value]:
+                if re.match(rf"^{matched_type_name}\.", e) is None:
+                    raise ValidationError(
+                        f"Attribute {repr(name)} is multi-value and ought to be a reference to component {repr(matched_type_name)}. Got {repr(e)}"
+                    )
         # Reference to other components
-        case (False, True, False, False, _):
-            return (
-                Annotated[str, msgspec.Meta(pattern=rf"^{matched_type_name}\.")] | None
+        case (False, False, True, False, False, _):
+            if re.match(rf"^{matched_type_name}\.", value) is None:
+                raise ValidationError(
+                    f"Attribute {repr(name)} ought to be a reference to component {repr(matched_type_name)}. Got {repr(value)}"
+                )
+        # Reference to other components
+        case (False, True, False, False, False, _):
+            # TODO: try to improve error message by pointing to specific component
+            # it should refer to. That info is most often available in the
+            # `Description` field
+            if not re.match(r"^[A-Z][a-z]+\.", value):
+                raise ValidationError(
+                    f"Attribute {repr(name)} ought to be a reference to a component (`ComponentReference` of `SubcomponentReference`). Got {repr(value)}"
+                )
+        case _ as wildcard_value:
+            raise ImpossibleComponent(
+                f"{repr(wildcard_value[:-1])}. Attribute name: {repr(name)}. Attribute value: {repr(value)}"
             )
-        case (False, False, True, True, _):
-            raise ImpossibleComponent(repr((False, False, True, True)))
-        case (False, False, True, False, _):
-            raise ImpossibleComponent(repr((False, False, True, False)))
-        case (False, False, False, True, _):
-            raise ImpossibleComponent(repr((False, False, False, True)))
-        case (False, False, False, False, _):
-            raise ImpossibleComponent(repr((False, False, False, False)))
+    # We gucci if no error was raised
+    return True
