@@ -103,25 +103,19 @@ def type_check_attribute(name: str, value: Any, type_data: str):
             ("maximum value", MAX_VAL_PATTERN.search(type_data)),
         ),
     ):
-        # Multi-value enum
-        case (True, False, False, True, True, _):
+        # Enum: single and multi-value
+        case (True, False, False, True, multi_value, _):
             for e in value if isinstance(value, list) else [value]:
                 if e not in allowed_values:
                     raise ValidationError(
-                        f"Attribute {repr(name)} is a multi-value enum with allowed values {', '.join(repr(v) for v in allowed_values)}. Got {repr(e)}"
+                        f"Attribute {repr(name)} is {'a multi-value' if multi_value else 'an'} enum with allowed values {', '.join(repr(v) for v in allowed_values)}. Got {repr(e)}."
                     )
-        # Enum
-        case (True, False, False, True, False, _):
-            if value not in allowed_values:
-                raise ValidationError(
-                    f"Attribute {repr(name)} is an enum with allowed values {', '.join(repr(v) for v in allowed_values)}. Got {repr(value)}"
-                )
-        # Multi-value non-enum
-        case (True, False, False, False, True, _):
+        # Generic non-enum: single and multi-value
+        case (True, False, False, False, multi_value, _):
             for e in value if isinstance(value, list) else [value]:
                 if not isinstance(e, type_):
                     raise ValidationError(
-                        f"Attribute {repr(name)} is a multi-value and ought to be of type {repr(matched_type_name)}. Got {repr(e)} which is of type {repr(type(e))}"
+                        f"Attribute {repr(name)} {'is a multi-value and' if multi_value else ''} ought to be of type {repr(matched_type_name)}. Got {repr(e)} which is of type {repr(type(e))}."
                     )
         # Constraints
         case (True, False, False, False, False, constraints) if any(
@@ -134,23 +128,18 @@ def type_check_attribute(name: str, value: Any, type_data: str):
                     raise ValidationError(
                         f"Attribute {repr(name)} is constrained to {k} {bound}. Got {repr(value)}."
                     )
-        case (True, False, False, False, False, _):
-            if not isinstance(value, type_):
-                raise ValidationError(
-                    f"Attribute {repr(name)} ought to be of type {repr(matched_type_name)}. Got {repr(value)} which is of type {repr(type(value))}"
-                )
         # Multi-value reference to other components
         case (False, False, True, False, True, _):
             for e in value if isinstance(value, list) else [value]:
                 if re.match(rf"^{matched_type_name}\.", e) is None:
                     raise ValidationError(
-                        f"Attribute {repr(name)} is multi-value and ought to be a reference to component {repr(matched_type_name)}. Got {repr(e)}"
+                        f"Attribute {repr(name)} is multi-value and ought to be a reference to component {repr(matched_type_name)}. Got {repr(e)}."
                     )
         # Reference to other components
         case (False, False, True, False, False, _):
             if re.match(rf"^{matched_type_name}\.", value) is None:
                 raise ValidationError(
-                    f"Attribute {repr(name)} ought to be a reference to component {repr(matched_type_name)}. Got {repr(value)}"
+                    f"Attribute {repr(name)} ought to be a reference to component {repr(matched_type_name)}. Got {repr(value)}."
                 )
         # Reference to other components
         case (False, True, False, False, False, _):
@@ -159,11 +148,11 @@ def type_check_attribute(name: str, value: Any, type_data: str):
             # `Description` field
             if not re.match(r"^[A-Z][a-z]+\.", value):
                 raise ValidationError(
-                    f"Attribute {repr(name)} ought to be a reference to a component (`ComponentReference` of `SubcomponentReference`). Got {repr(value)}"
+                    f"Attribute {repr(name)} ought to be a reference to a component (`ComponentReference` of `SubcomponentReference`). Got {repr(value)}."
                 )
         case _ as wildcard_value:
             raise ImpossibleComponent(
-                f"{repr(wildcard_value[:-1])}. Attribute name: {repr(name)}. Attribute value: {repr(value)}"
+                f"{repr(wildcard_value[:-1])}. Attribute name: {repr(name)}. Attribute value: {repr(value)}."
             )
     # We gucci if no error was raised
     return True
