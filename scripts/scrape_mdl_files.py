@@ -1,20 +1,30 @@
 """
 Scrapped all .mdl files under the "veeva" GitHub user. Requires "GITHUB_TOKEN"
 environment variable
+
+Usage: `python3 scrape_mdl_files.py -o /path/to/wherever/you/want/the/scrapped/files`
 """
+# TODO: how worth it is it to make this into a standalone script as per `uv`'s
+# documentation? See https://docs.astral.sh/uv/guides/scripts/#declaring-script-dependencies
 
 from argparse import ArgumentParser
 from base64 import b64decode
 import json
 import os
 from pathlib import Path
+from typing import Generator
 
 import httpx
 
 
 class GithubClient(httpx.Client):
-    host: str = "api.github.com"
+    """A thin wrapper around `httpx.Client` with two goodies:
+    1. It injects the host and/or scheme to the URL if the user does not provide it.
+    2. It injects the authentication token to every request header.
+    """
+
     scheme: str = "https"
+    host: str = "api.github.com"
 
     def __init__(self, token: str, *args, **kwargs):
         self.token = token
@@ -45,18 +55,26 @@ class GithubClient(httpx.Client):
         return super().request(method, clean_url, **kwargs)
 
 
-def user_repos(user: str, github_client: GithubClient):
+def user_repos(user: str, github_client: GithubClient) -> Generator[dict, None, None]:
+    """Yields repository metadata from
+    https://docs.github.com/en/rest/repos/repos?apiVersion=2022-11-28#list-repositories-for-a-user
+    """
     yield from github_client.get(f"/users/{user}/repos").json()
 
 
-def repo_latest_commit(url: str, github_client: GithubClient):
+def repo_latest_commit(url: str, github_client: GithubClient) -> dict:
+    """Fetch the last commit of a repo via
+    https://docs.github.com/en/rest/commits/commits?apiVersion=2022-11-28"""
     return github_client.get(f"{url}/commits", params={"per_page": 1}).json()[0]
 
 
-def repo_files(url: str, github_client: GithubClient):
-    # Only way to iterate through all files in a GitHub repo is to iterate the
-    # Git tree, for which we need a commit's SHA256. Here we just choose the
-    # latest repo commit
+def repo_files(url: str, github_client: GithubClient) -> Generator[dict, None, None]:
+    """ "Iterates over all files in a GitHub repository.
+
+    Only way to iterate through all files in a GitHub repo is to iterate the
+    Git tree, for which we need a commit's SHA256. Here we just choose the
+    latest repo commit.
+    """
     commit_sha = repo_latest_commit(url, github_client)["sha"]
     response = github_client.get(
         f"{url}/git/trees/{commit_sha}", params={"recursive": True}
@@ -70,14 +88,20 @@ def cli() -> Path:
         "-o",
         "--out-dir",
         help="Directory in which to place scrapped MDL files.",
-        required=True,
     )
     arguments = argument_parser.parse_args()
-    out_dir = Path(arguments.out_dir).resolve()
+    out_dir = (
+        Path(__file__).parent.parent / "tests" / "mdl_examples" / "scrapped"
+        if arguments.out_dir is None
+        else Path(arguments.out_dir).resolve()
+    )
     return out_dir
 
 
-def main(out_dir):
+def main(out_dir: Path):
+    """Iterate over all repositories and files under GitHub user `veeva`, and save
+    to `out_dir` those with extension `.mdl`.
+    """
     outdir_to_url = {}
     github_client = GithubClient(os.environ["GITHUB_TOKEN"])
     for repo_metadata in user_repos("veeva", github_client):

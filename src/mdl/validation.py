@@ -141,7 +141,8 @@ def type_check_attribute(name: str, value: Any, type_data: str):
                 raise ValidationError(
                     f"Attribute {repr(name)} ought to be a reference to component {repr(matched_type_name)}. Got {repr(value)}."
                 )
-        # Reference to other components
+        # A generic reference to other components, i.e. the referenced component
+        # is not explicitly mentioned
         case (False, True, False, False, False, _):
             # TODO: try to improve error message by pointing to specific component
             # it should refer to. That info is most often available in the

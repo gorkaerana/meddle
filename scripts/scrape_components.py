@@ -4,10 +4,13 @@ https://developer.veevavault.com/mdl/components/.
 
 Usage: `python3 scrape_components.py`
 """
+# TODO: how worth it is it to make this into a standalone script as per `uv`'s
+# documentation? See https://docs.astral.sh/uv/guides/scripts/#declaring-script-dependencies
 
 from __future__ import annotations
 import json
 import re
+from argparse import ArgumentParser
 from pathlib import Path
 from typing import Any, Callable, Generator, TypeAlias
 
@@ -16,6 +19,7 @@ from bs4.element import Tag
 import msgspec
 import httpx
 
+# Represents one row in a tabular data format
 Record: TypeAlias = dict[str, Any]
 
 
@@ -24,6 +28,7 @@ COMPONENT_NAME_PATTERN = re.compile(r"^[A-Z][a-z]+$")
 
 
 def table_to_records(tag: Tag) -> list[Record]:
+    """Convert a `bs4.element.Tag` into tabular data format."""
     assert tag.name == "table"
     column_names = [
         t.text for t in tag.findChild("thead").findChild("tr").findChildren("th")
@@ -35,7 +40,7 @@ def table_to_records(tag: Tag) -> list[Record]:
         # Columns
         for col_name, td_tag in zip(column_names, tr_tag.findChildren("td")):
             # Replace <br> and <li> tags with more convenient characters to make
-            # information parsing easier
+            # information parsing easier. Conversion is done in-place.
             for br_tag in td_tag.find_all("br"):
                 br_tag.replace_with("\n")
             for li_tag in td_tag.find_all("li"):
@@ -48,8 +53,14 @@ def table_to_records(tag: Tag) -> list[Record]:
 def find_in_siblings_until(
     tag: Tag,
     matcher: Callable[[Tag], bool],
-    breaker: Callable[[Tag], bool] = lambda t: False,
+    breaker: Callable[[Tag | None], bool] = lambda t: False,
 ) -> Generator[Tag]:
+    """Iterate through siblings of `tag` (via its `find_next_sibling` method) and
+    yield those flagged by `matcher`, until `breaker` signals an end.
+
+    The input variable of `breaker` is optional cause `bs4.element.Tag.find_next_sibling`
+    will return `None` when it cannot find any more siblings
+    """
     next_tag = tag.find_next_sibling()
     while True:
         if breaker(next_tag):
@@ -94,7 +105,23 @@ class ComponentMetadata(msgspec.Struct):
         )
 
 
-def main():
+def cli() -> Path:
+    argument_parser = ArgumentParser()
+    argument_parser.add_argument(
+        "-o",
+        "--out-path",
+        help="Filepath in which to place scrapped component metadata.",
+    )
+    arguments = argument_parser.parse_args()
+    out_path = (
+        Path(__file__).parent.parent / "src" / "mdl" / "validation.json"
+        if arguments.out_path is None
+        else Path(arguments.out_path).resolve()
+    )
+    return out_path
+
+
+def main(out_path: Path):
     response = httpx.get(URL)
     soup = BeautifulSoup(response.content, "html.parser")
 
@@ -150,10 +177,9 @@ def main():
 
     # Aaaaaand out it goes
     dumpable = {k: v for k, v in [c.convert() for c in validated]}
-    out_path = Path(__file__).parent.parent / "src" / "mdl" / "validation.json"
     out_path.write_text(json.dumps(dumpable, indent=4))
     print(f"Wrote {out_path}")
 
 
 if __name__ == "__main__":
-    main()
+    main(cli())

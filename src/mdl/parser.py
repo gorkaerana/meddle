@@ -25,6 +25,10 @@ mdl_grammar = (here / "mdl_grammar.lark").read_text()
 
 
 def mark_first_and_last(iterable: Iterable) -> tuple[bool, bool, Any]:
+    """Given an `iterable`, flag its first and last elements. E.g.
+    >>> list(mark_first_and_last(range(2)))
+    >>> [(True, False, 0), (False, True, 1)]
+    """
     iterable = iter(iterable)
     buffer_ = deque([(True, False, next(iterable))], maxlen=1)
     while True:
@@ -39,6 +43,7 @@ def mark_first_and_last(iterable: Iterable) -> tuple[bool, bool, Any]:
 
 
 def get_parser(start: str) -> Lark:
+    """A light wrapper around `lark.Lark` to easily specify different `start` symbols."""
     return Lark(
         grammar=mdl_grammar,
         start=start,
