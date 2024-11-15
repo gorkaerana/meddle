@@ -128,6 +128,16 @@ class ComponentMetadata(msgspec.Struct):
         )
 
 
+class ComponentMetadataDict(TypedDict):
+    """A dictionary equivalent of the `ComponentMetadata` `msgspec.Struct`. Data
+    is first gathered into a dict of this model and then parsed into
+    `ComponentMetadata` to add an extra validation layer."""
+
+    name: str
+    table: NotRequired[list[Record]]
+    children: NotRequired[list["ComponentMetadataDict"]]
+
+
 def cli() -> Path:
     argument_parser = ArgumentParser()
     argument_parser.add_argument(
@@ -142,12 +152,6 @@ def cli() -> Path:
         else Path(arguments.out_path).resolve()
     )
     return out_path
-
-
-class ComponentMetadataDict(TypedDict):
-    name: str
-    table: NotRequired[list[Record]]
-    children: NotRequired[list["ComponentMetadataDict"]]
 
 
 def main(out_path: Path):
