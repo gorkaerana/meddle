@@ -1,9 +1,9 @@
 from __future__ import annotations
 from collections import deque
 from pathlib import Path
-from typing import Any, Callable, Generator, Iterable, Literal, Self, TypeAlias
+from typing import Any, Callable, Generator, Iterable, TypeAlias
 
-from lark import Lark, Transformer, Tree
+from lark import Lark, Transformer, Tree, Token
 import msgspec
 
 from mdl.validation import (
@@ -24,10 +24,12 @@ here = Path(__file__).parent
 mdl_grammar = (here / "mdl_grammar.lark").read_text()
 
 
-def mark_first_and_last(iterable: Iterable) -> tuple[bool, bool, Any]:
+def mark_first_and_last(
+    iterable: Iterable,
+) -> Generator[tuple[bool, bool, Any], None, None]:
     """Given an `iterable`, flag its first and last elements. E.g.
-    >>> list(mark_first_and_last(range(2)))
-    >>> [(True, False, 0), (False, True, 1)]
+    >>> list(mark_first_and_last(range(3)))
+    >>> [(True, False, 0), (False, False, 1), (False, True, 2)]
     """
     iterable = iter(iterable)
     buffer_ = deque([(True, False, next(iterable))], maxlen=1)
@@ -78,6 +80,8 @@ class Attribute(msgspec.Struct):
             yield str(self.value).lower()
         elif isinstance(self.value, list):
             yield repr(self.value)[1:-1]
+        elif isinstance(self.value, float | int):
+            yield repr(self.value)
         else:
             string_lines = self.value.splitlines()
             if len(string_lines) == 1:
@@ -94,7 +98,7 @@ class Attribute(msgspec.Struct):
         self,
         metadata: dict,
         parent_component_type_name: str,
-    ) -> Literal[True]:
+    ) -> bool:
         attribute_metadata = metadata["attributes"].get(self.name)
         if attribute_metadata is None:
             options = ", ".join(repr(n) for n in metadata["attributes"].keys())
@@ -125,9 +129,7 @@ class Component(msgspec.Struct):
     def dumps(self):
         return "\n".join(self.__parts__())
 
-    def validate(
-        self, metadata: dict, parent_component_type_name: str
-    ) -> Literal[True]:
+    def validate(self, metadata: dict, parent_component_type_name: str) -> bool:
         ctn = self.component_type_name
         component_metadata = metadata["subcomponents"].get(ctn)
         if component_metadata is None:
@@ -150,7 +152,7 @@ class Command(msgspec.Struct):
     logical_operator: str | None = None
 
     @classmethod
-    def loads(self, source: str) -> Component:
+    def loads(self, source: str) -> Command:
         return get_parser("mdl_command").parse(source)
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
@@ -184,7 +186,7 @@ class Command(msgspec.Struct):
         self,
         metadata: dict | None = None,
         parent_component_type_name: str | None = None,
-    ) -> Literal[True]:
+    ) -> bool:
         ctn = self.component_type_name
         metadata = component_type_metadata if metadata is None else metadata
         # Top-level command
@@ -202,26 +204,50 @@ class Command(msgspec.Struct):
                     f"{repr(parent_component_type_name)}. Options are: {options}."
                 )
         return all(
-            all(e.validate(ctm, ctn) for e in f or [])
+            e.validate(ctm, ctn)
             for f in [self.attributes, self.components, self.commands]
+            for e in f or []
         )
 
 
-def generic_command(
-    command_name,
-) -> Callable[
-    [Self, list[Tree | list[Attribute] | list[Component] | list[Command]]], Command
-]:
-    def inner(
-        self, children: list[Tree | list[Attribute] | list[Component] | list[Command]]
-    ) -> Command:
-        if (children[1] == "IF EXISTS") or (children[1] == "IF NOT EXISTS"):
-            component_type_name_tree, logical_operator, component_name_tree, *rest = (
-                children
-            )
-        else:
-            component_type_name_tree, component_name_tree, *rest = children
-            logical_operator = None
+def generic_command(command_name: str) -> Callable[[MdlTreeTransformer, Any], Command]:
+    def inner(self, children: Any) -> Command:
+        component_type_name_tree: Tree[Token]
+        logical_operator: str | None
+        component_name_tree: Tree[Token]
+        component_type_name: str
+        component_name: str
+        attributes: list[Attribute] | None
+        components: list[Component] | None
+        commands: list[Command] | None
+        match children:
+            case (
+                component_type_name_tree,
+                logical_operator,
+                component_name_tree,
+                *rest,
+            ) if (
+                (
+                    (logical_operator == "IF EXISTS")
+                    or (logical_operator == "IF NOT EXISTS")
+                )
+                and isinstance(component_type_name_tree.children[0], Token)
+                and isinstance(component_name_tree.children[0], Token)
+            ):
+                (
+                    component_type_name_tree,
+                    logical_operator,
+                    component_name_tree,
+                    *rest,
+                ) = children
+            case (component_type_name_tree, component_name_tree, *rest) if (
+                isinstance(component_type_name_tree.children[0], Token)
+                and isinstance(component_name_tree.children[0], Token)
+            ):
+                component_type_name_tree, component_name_tree, *rest = children
+                logical_operator = None
+            case _:
+                raise Unreachable(f"Got these children {children}")
         component_type_name = component_type_name_tree.children[0].value
         component_name = component_name_tree.children[0].value
         attributes, components, commands = None, None, None
@@ -256,7 +282,7 @@ def generic_command(
 
 
 class MdlTreeTransformer(Transformer):
-    def xml(self, children):
+    def xml(self, children) -> str:
         # TODO: support properly instead of just reading into a string
         assert len(children) == 1, "A 'xml' branch can only have a single children"
         return children[0].value
@@ -284,7 +310,7 @@ class MdlTreeTransformer(Transformer):
         else:
             raise Unreachable("A 'number' can either be parsed as an int or a decimal")
 
-    def attribute_value(self, children) -> AttributeValue | list[AttributeValue]:
+    def attribute_value(self, children) -> AttributeValue | list[AttributeValue] | None:
         if len(children) == 0:
             return None
         if len(children) == 1:
