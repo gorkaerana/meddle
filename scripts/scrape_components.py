@@ -12,10 +12,9 @@ import json
 import re
 from argparse import ArgumentParser
 from pathlib import Path
-from typing import Any, Callable, Generator, TypeAlias
+from typing import Any, Callable, Generator, NotRequired, TypeAlias, TypedDict
 
-from bs4 import BeautifulSoup
-from bs4.element import Tag
+from bs4 import BeautifulSoup, NavigableString, Tag
 import msgspec
 import httpx
 
@@ -27,15 +26,39 @@ URL = "https://developer.veevavault.com/mdl/components/"
 COMPONENT_NAME_PATTERN = re.compile(r"^[A-Z][a-z]+$")
 
 
-def table_to_records(tag: Tag) -> list[Record]:
+def table_to_records(tag: Tag | NavigableString) -> list[Record]:
     """Convert a `bs4.element.Tag` into tabular data format."""
-    assert tag.name == "table"
-    column_names = [
-        t.text for t in tag.findChild("thead").findChild("tr").findChildren("th")
-    ]
-    records: list[Record] = []
+
+    # Pleasing mypy until new notice
+    if not isinstance(tag, Tag):
+        raise ValueError(
+            f"Input variable 'tag' ought to be of type {repr(Tag)}. Got {repr(type(tag))}."
+        )
+    if (tn := tag.name) != "table":
+        raise ValueError(
+            f"Property 'name' of input variable 'tag' ought to be 'table'. Got {repr(tn)} from {tag}"
+        )
+    thead_child = tag.findChild("thead")
+    if not isinstance(thead_child, Tag):
+        raise ValueError(
+            f"Input argument 'tag' ought to have at least one 'thead' child tag. Got parent {tag}, child {thead_child}."
+        )
+    tr_child = thead_child.findChild("tr")
+    if not isinstance(tr_child, Tag):
+        raise ValueError(
+            f"Input argument 'tag' ought to have at least one 'tr' grandchild under 'thead. Got grandparent {tag}, child {thead_child}, grandkid {tr_child}."
+        )
+    tbody_child = tag.findChild("tbody")
+    if not isinstance(tbody_child, Tag):
+        raise ValueError(
+            f"Input argument 'tag' ought to have at least one 'tbody' child tag. Got parent {tag}, child {tbody_child}."
+        )
+    # No longer pleasing mypy
+
+    column_names = [t.text for t in tr_child.findChildren("th")]
     # Rows
-    for tr_tag in tag.findChild("tbody").findChildren("tr"):
+    records: list[Record] = []
+    for tr_tag in tbody_child.findChildren("tr"):
         record: Record = {}
         # Columns
         for col_name, td_tag in zip(column_names, tr_tag.findChildren("td")):
@@ -51,10 +74,10 @@ def table_to_records(tag: Tag) -> list[Record]:
 
 
 def find_in_siblings_until(
-    tag: Tag,
-    matcher: Callable[[Tag], bool],
-    breaker: Callable[[Tag | None], bool] = lambda t: False,
-) -> Generator[Tag]:
+    tag: Tag | NavigableString,
+    matcher: Callable[[Tag | NavigableString], bool],
+    breaker: Callable[[Tag | NavigableString], bool] = lambda t: False,
+) -> Generator[Tag | NavigableString]:
     """Iterate through siblings of `tag` (via its `find_next_sibling` method) and
     yield those flagged by `matcher`, until `breaker` signals an end.
 
@@ -63,7 +86,7 @@ def find_in_siblings_until(
     """
     next_tag = tag.find_next_sibling()
     while True:
-        if breaker(next_tag):
+        if (next_tag is None) or breaker(next_tag):
             return
         if matcher(next_tag):
             yield next_tag
@@ -121,11 +144,17 @@ def cli() -> Path:
     return out_path
 
 
+class ComponentMetadataDict(TypedDict):
+    name: str
+    table: NotRequired[list[Record]]
+    children: NotRequired[list["ComponentMetadataDict"]]
+
+
 def main(out_path: Path):
     response = httpx.get(URL)
     soup = BeautifulSoup(response.content, "html.parser")
 
-    components = []
+    components: list[ComponentMetadataDict] = []
     # In summary:
     # - component names are contained in `h1` headers;
     # - the metadata of the attributes associated with a given component are
@@ -142,6 +171,7 @@ def main(out_path: Path):
     # 4. Gather the tables following the an `h3` header and before the next `h3`
     # header
     for tag in soup.find_all("h1"):
+        component: ComponentMetadataDict
         # Step 1
         if not COMPONENT_NAME_PATTERN.match(tag.text):
             continue
@@ -157,8 +187,9 @@ def main(out_path: Path):
         component["children"] = []
         # Step 3
         for heading3_tag in find_in_siblings_until(
-            tag, lambda t: t.name == "h3", lambda t: (t is None) or (t.name == "h1")
+            tag, lambda t: t.name == "h3", lambda t: t.name == "h1"
         ):
+            subcomponent: ComponentMetadataDict
             subcomponent = {"name": heading3_tag.text}
             # Step 4
             subtable_tag = next(
