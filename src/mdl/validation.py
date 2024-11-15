@@ -1,7 +1,7 @@
 import json
 import re
 from pathlib import Path
-from typing import Any, Callable, Literal, TypedDict
+from typing import Any, Callable, Literal, TypeAlias, TypedDict
 
 
 class ValidationError(Exception):
@@ -24,6 +24,19 @@ MAX_LEN_PATTERN = re.compile(r"Maximum length : (.*)")
 MIN_VAL_PATTERN = re.compile(r"Minimum value : (.*)")
 MAX_VAL_PATTERN = re.compile(r"Maximum value : (.*)")
 
+
+MatchTuple: TypeAlias = tuple[
+    bool,
+    bool,
+    bool,
+    bool,
+    bool,
+    tuple[
+        tuple[Literal["maximum length"], re.Match | None],
+        tuple[Literal["minimum value"], re.Match | None],
+        tuple[Literal["maximum value"], re.Match | None],
+    ],
+]
 
 ConstraintFunctions = TypedDict(
     "ConstraintFunctions",
@@ -119,18 +132,7 @@ def type_check_attribute(name: str, value: Any, type_data: str):
     )
     type_ = VEEVA_DOC_TO_PYTHON_TYPE.get(matched_type_name)
     is_type_supported = type_ is not None
-    match_tuple: tuple[
-        bool,
-        bool,
-        bool,
-        bool,
-        bool,
-        tuple[
-            tuple[Literal["maximum length"], re.Match | None],
-            tuple[Literal["minimum value"], re.Match | None],
-            tuple[Literal["maximum value"], re.Match | None],
-        ],
-    ] = (
+    match_tuple: MatchTuple = (
         is_type_supported,
         is_generic_component_reference(matched_type_name),
         is_component_reference(matched_type_name),
@@ -154,7 +156,6 @@ def type_check_attribute(name: str, value: Any, type_data: str):
         case (True, False, False, False, multi_value, _):
             for e in value if isinstance(value, list) else [value]:
                 if type(e) is not type_:
-                    # if not isinstance(e, type_):
                     raise ValidationError(
                         f"Attribute {repr(name)} {'is a multi-value and' if multi_value else ''} ought to be of type {repr(matched_type_name)}. Got {repr(e)} which is of type {repr(type(e))}."
                     )

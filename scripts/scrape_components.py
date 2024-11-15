@@ -29,7 +29,7 @@ COMPONENT_NAME_PATTERN = re.compile(r"^[A-Z][a-z]+$")
 def table_to_records(tag: Tag | NavigableString) -> list[Record]:
     """Convert a `bs4.element.Tag` into tabular data format."""
 
-    # Pleasing mypy until new notice
+    # Pleasing mypy until further notice
     if not isinstance(tag, Tag):
         raise ValueError(
             f"Input variable 'tag' ought to be of type {repr(Tag)}. Got {repr(type(tag))}."
