@@ -1,7 +1,7 @@
 from __future__ import annotations
 from collections import deque
 from pathlib import Path
-from typing import Any, Callable, Generator, Iterable, TypeAlias
+from typing import Any, Callable, Generator, Iterable, Literal, TypeAlias, overload
 
 from lark import Lark, Transformer, Tree, Token
 import msgspec
@@ -25,7 +25,7 @@ mdl_grammar = (here / "mdl_grammar.lark").read_text()
 
 
 def first_child_is_token(tree: Tree) -> bool:
-    return (len(tree.children) > 1) and isinstance(tree.children[0], Token)
+    return (len(tree.children) > 0) and isinstance(tree.children[0], Token)
 
 
 def mark_first_and_last(
@@ -48,16 +48,24 @@ def mark_first_and_last(
             break
 
 
-def get_parser(start: str) -> Lark:
-    """A light wrapper around `lark.Lark` to easily specify different `start` symbols."""
-    return Lark(grammar=mdl_grammar, start=start, parser="lalr")
+@overload
+def parse_and_transform(start: Literal["attribute"], source: str) -> "Attribute": ...
 
 
-def parse_and_transform(parser: Lark, source: str):
-    # The only reason this function exists is to please `mypy`. For whichever
-    # reason it cannot figure out the correct return type annotation of the
-    # transformer if it is passed to `lark.Lark` via the `transformer` argument
-    return MdlTreeTransformer(visit_tokens=True).transform(parser.parse(source))
+@overload
+def parse_and_transform(start: Literal["component"], source: str) -> "Component": ...
+
+
+@overload
+def parse_and_transform(start: Literal["mdl_command"], source: str) -> "Command": ...
+
+
+def parse_and_transform(start: str, source: str):
+    parser = Lark(grammar=mdl_grammar, start=start, parser="lalr")
+    parsed = parser.parse(source)
+    transformer = MdlTreeTransformer(visit_tokens=True)
+    transformed = transformer.transform(parsed)
+    return transformed
 
 
 AttributeValue: TypeAlias = bool | int | float | str
@@ -70,7 +78,7 @@ class Attribute(msgspec.Struct):
 
     @classmethod
     def loads(cls, source: str) -> Attribute:
-        return parse_and_transform(get_parser("attribute"), source)
+        return parse_and_transform("attribute", source)
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         yield (INDENT * indent_level)
@@ -124,7 +132,7 @@ class Component(msgspec.Struct):
 
     @classmethod
     def loads(cls, source: str) -> Component:
-        return parse_and_transform(get_parser("component"), source)
+        return parse_and_transform("component", source)
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         yield f"{INDENT*indent_level}{self.component_type_name} {self.component_name} ("
@@ -159,7 +167,7 @@ class Command(msgspec.Struct):
 
     @classmethod
     def loads(cls, source: str) -> Command:
-        return parse_and_transform(get_parser("mdl_command"), source)
+        return parse_and_transform("mdl_command", source)
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         first_line_start = (
@@ -251,7 +259,7 @@ def generic_command(command_name: str) -> Callable[[MdlTreeTransformer, Any], Co
                 logical_operator = None
             case _:
                 raise Unreachable(f"Got children {children}")
-        # This assertion exists sorely to please `pyright`, notice how this is
+        # This assertion only exists to please `pyright`, notice how this is
         # checked for in both `match` cases above, via `first_child_is_token`.
         # For whichever reason `pyright` can't:
         # 1. Figure that out.

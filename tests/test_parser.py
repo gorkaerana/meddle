@@ -5,7 +5,7 @@ import pytest
 import msgspec
 
 from mdl import Attribute, Component, Command
-from mdl.parser import get_parser
+from mdl.parser import parse_and_transform
 
 
 @pytest.fixture
@@ -17,37 +17,37 @@ def component_metadata(root_test_dir):
 
 @pytest.fixture
 def attribute_value_parser():
-    return get_parser("attribute_value").parse
+    return lambda source: parse_and_transform("attribute_value", source)
 
 
 @pytest.fixture
 def attribute_parser():
-    return get_parser("attribute").parse
+    return lambda source: parse_and_transform("attribute", source)
 
 
 @pytest.fixture
 def attributes_parser():
-    return get_parser("attributes").parse
+    return lambda source: parse_and_transform("attributes", source)
 
 
 @pytest.fixture
 def component_parser():
-    return get_parser("component").parse
+    return lambda source: parse_and_transform("component", source)
 
 
 @pytest.fixture
 def components_parser():
-    return get_parser("components").parse
+    return lambda source: parse_and_transform("components", source)
 
 
 @pytest.fixture
 def logical_operator_parser():
-    return get_parser("logical_operator").parse
+    return lambda source: parse_and_transform("logical_operator", source)
 
 
 @pytest.fixture
 def create_command_parser():
-    return get_parser("create_command").parse
+    return lambda source: parse_and_transform("create_command", source)
 
 
 @pytest.fixture
@@ -62,7 +62,7 @@ def create_command_json(mdl_examples_dir):
 
 @pytest.fixture
 def recreate_command_parser():
-    return get_parser("recreate_command").parse
+    return lambda source: parse_and_transform("recreate_command", source)
 
 
 @pytest.fixture
@@ -77,7 +77,7 @@ def recreate_command_json(mdl_examples_dir):
 
 @pytest.fixture
 def drop_command_parser():
-    return get_parser("drop_command").parse
+    return lambda source: parse_and_transform("drop_command", source)
 
 
 @pytest.fixture
@@ -92,7 +92,7 @@ def drop_command_json(mdl_examples_dir):
 
 @pytest.fixture
 def rename_command_parser():
-    return get_parser("rename_command").parse
+    return lambda source: parse_and_transform("rename_command", source)
 
 
 @pytest.fixture
@@ -107,7 +107,7 @@ def rename_command_json(mdl_examples_dir):
 
 @pytest.fixture
 def alter_command_parser():
-    return get_parser("alter_command").parse
+    return lambda source: parse_and_transform("alter_command", source)
 
 
 @pytest.fixture
@@ -122,7 +122,7 @@ def alter_command_json(mdl_examples_dir):
 
 @pytest.fixture
 def add_command_parser():
-    return get_parser("add_command").parse
+    return lambda source: parse_and_transform("add_command", source)
 
 
 @pytest.fixture
@@ -137,7 +137,7 @@ def add_command_json(mdl_examples_dir):
 
 @pytest.fixture
 def modify_command_parser():
-    return get_parser("modify_command").parse
+    return lambda source: parse_and_transform("modify_command", source)
 
 
 @pytest.fixture
@@ -152,7 +152,7 @@ def modify_command_json(mdl_examples_dir):
 
 @pytest.fixture
 def mdl_command_parser():
-    return get_parser("mdl_command").parse
+    return lambda source: parse_and_transform("mdl_command", source)
 
 
 @pytest.fixture
