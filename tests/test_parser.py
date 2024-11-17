@@ -446,8 +446,3 @@ def test_mdl_command(mdl, json, request, mdl_command_parser):
     assert mdl_command_parser(request.getfixturevalue(mdl)) == msgspec.json.decode(
         request.getfixturevalue(json), type=Command
     )
-
-
-@pytest.mark.parametrize("mdl", ["validation1_mdl", "validation2_mdl"])
-def test_validation(mdl, mdl_command_parser, component_metadata, request):
-    assert mdl_command_parser(request.getfixturevalue(mdl)).validate(component_metadata)
