@@ -12,7 +12,7 @@ class ImpossibleComponent(Exception):
     pass
 
 
-component_type_metadata = json.loads(
+component_type_metadata: dict = json.loads(
     (Path(__file__).parent / "validation.json").read_text()
 )
 

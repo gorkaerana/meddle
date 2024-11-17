@@ -24,6 +24,10 @@ here = Path(__file__).parent
 mdl_grammar = (here / "mdl_grammar.lark").read_text()
 
 
+def first_child_is_token(tree: Tree) -> bool:
+    return (len(tree.children) > 1) and isinstance(tree.children[0], Token)
+
+
 def mark_first_and_last(
     iterable: Iterable,
 ) -> Generator[tuple[bool, bool, Any], None, None]:
@@ -46,12 +50,14 @@ def mark_first_and_last(
 
 def get_parser(start: str) -> Lark:
     """A light wrapper around `lark.Lark` to easily specify different `start` symbols."""
-    return Lark(
-        grammar=mdl_grammar,
-        start=start,
-        parser="lalr",
-        transformer=MdlTreeTransformer(visit_tokens=True),
-    )
+    return Lark(grammar=mdl_grammar, start=start, parser="lalr")
+
+
+def parse_and_transform(parser: Lark, source: str):
+    # The only reason this function exists is to please `mypy`. For whichever
+    # reason it cannot figure out the correct return type annotation of the
+    # transformer if it is passed to `lark.Lark` via the `transformer` argument
+    return MdlTreeTransformer(visit_tokens=True).transform(parser.parse(source))
 
 
 AttributeValue: TypeAlias = bool | int | float | str
@@ -63,8 +69,8 @@ class Attribute(msgspec.Struct):
     command: str | None = None
 
     @classmethod
-    def loads(self, source: str) -> Attribute:
-        return get_parser("attribute").parse(source)
+    def loads(cls, source: str) -> Attribute:
+        return parse_and_transform(get_parser("attribute"), source)
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         yield (INDENT * indent_level)
@@ -117,8 +123,8 @@ class Component(msgspec.Struct):
     attributes: list[Attribute] | None = None
 
     @classmethod
-    def loads(self, source: str) -> Component:
-        return get_parser("component").parse(source)
+    def loads(cls, source: str) -> Component:
+        return parse_and_transform(get_parser("component"), source)
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         yield f"{INDENT*indent_level}{self.component_type_name} {self.component_name} ("
@@ -152,8 +158,8 @@ class Command(msgspec.Struct):
     logical_operator: str | None = None
 
     @classmethod
-    def loads(self, source: str) -> Command:
-        return get_parser("mdl_command").parse(source)
+    def loads(cls, source: str) -> Command:
+        return parse_and_transform(get_parser("mdl_command"), source)
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         first_line_start = (
@@ -188,17 +194,17 @@ class Command(msgspec.Struct):
         parent_component_type_name: str | None = None,
     ) -> bool:
         ctn = self.component_type_name
-        metadata = component_type_metadata if metadata is None else metadata
+        metadata_: dict = component_type_metadata if metadata is None else metadata
         # Top-level command
         if parent_component_type_name is None:
-            ctm = metadata.get(ctn)
+            ctm = metadata_.get(ctn)
             if ctm is None:
                 raise ValidationError(f"Component type {repr(ctm)} does not exist.")
         # We are below another command
         else:
-            ctm = metadata["subcomponents"].get(ctn)
+            ctm = metadata_["subcomponents"].get(ctn)
             if ctm is None:
-                options = ", ".join(repr(k) for k in metadata["subcomponents"].keys())
+                options = ", ".join(repr(k) for k in metadata_["subcomponents"].keys())
                 raise ValidationError(
                     f"Component type {repr(ctn)} is not allowed under component type "
                     f"{repr(parent_component_type_name)}. Options are: {options}."
@@ -227,12 +233,9 @@ def generic_command(command_name: str) -> Callable[[MdlTreeTransformer, Any], Co
                 component_name_tree,
                 *rest,
             ) if (
-                (
-                    (logical_operator == "IF EXISTS")
-                    or (logical_operator == "IF NOT EXISTS")
-                )
-                and isinstance(component_type_name_tree.children[0], Token)
-                and isinstance(component_name_tree.children[0], Token)
+                (logical_operator in {"IF EXISTS", "IF NOT EXISTS"})
+                and first_child_is_token(component_type_name_tree)
+                and first_child_is_token(component_name_tree)
             ):
                 (
                     component_type_name_tree,
@@ -241,13 +244,21 @@ def generic_command(command_name: str) -> Callable[[MdlTreeTransformer, Any], Co
                     *rest,
                 ) = children
             case (component_type_name_tree, component_name_tree, *rest) if (
-                isinstance(component_type_name_tree.children[0], Token)
-                and isinstance(component_name_tree.children[0], Token)
+                first_child_is_token(component_type_name_tree)
+                and first_child_is_token(component_name_tree)
             ):
                 component_type_name_tree, component_name_tree, *rest = children
                 logical_operator = None
             case _:
-                raise Unreachable(f"Got these children {children}")
+                raise Unreachable(f"Got children {children}")
+        # This assertion exists sorely to please `pyright`, notice how this is
+        # checked for in both `match` cases above, via `first_child_is_token`.
+        # For whichever reason `pyright` can't:
+        # 1. Figure that out.
+        # 2. Figure out that `first_child_is_token` does exactly that in this context
+        assert isinstance(component_type_name_tree.children[0], Token) and isinstance(
+            component_name_tree.children[0], Token
+        )
         component_type_name = component_type_name_tree.children[0].value
         component_name = component_name_tree.children[0].value
         attributes, components, commands = None, None, None
