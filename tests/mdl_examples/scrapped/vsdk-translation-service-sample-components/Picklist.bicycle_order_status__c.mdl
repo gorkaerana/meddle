@@ -1,0 +1,19 @@
+RECREATE Picklist bicycle_order_status__c (
+   label('Bicycle Order Status'),
+   active(true),
+   Picklistentry accepted__c(
+      value('Accepted'),
+      order(0),
+      active(true)
+   ),
+   Picklistentry rejected__c(
+      value('Rejected'),
+      order(1),
+      active(true)
+   ),
+   Picklistentry fulfilled__c(
+      value('Fulfilled'),
+      order(2),
+      active(true)
+   )
+);

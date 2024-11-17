@@ -1,0 +1,24 @@
+RECREATE Picklist transaction_status__c (
+   label('Transaction Status'),
+   active(true),
+   Picklistentry pending__c(
+      value('Pending'),
+      order(0),
+      active(true)
+   ),
+   Picklistentry send_failure__c(
+      value('Send Failure'),
+      order(1),
+      active(true)
+   ),
+   Picklistentry process_failure__c(
+      value('Process Failure'),
+      order(2),
+      active(true)
+   ),
+   Picklistentry process_success__c(
+      value('Process Success'),
+      order(3),
+      active(true)
+   )
+);

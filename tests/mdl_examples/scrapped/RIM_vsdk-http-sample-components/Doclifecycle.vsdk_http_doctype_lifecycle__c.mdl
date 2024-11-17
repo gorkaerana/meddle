@@ -1,0 +1,7 @@
+ALTER Doclifecycle vsdk_http_doctype_lifecycle__c (
+	MODIFY Doclifecyclestate draft__c(
+		  user_action({<?xml version="1.0" encoding="UTF-8"?>
+		<rules><rule><actions><action type="Documentaction.com.veeva.vault.custom.actions.vSDKLocalHttpCalloutAction" name="Documentaction.com.veeva.vault.custom.actions.vSDKLocalHttpCalloutAction" configuredLabel="SDK: Local Http Callout" /></actions></rule><rule><actions><action type="Documentaction.com.veeva.vault.custom.actions.vSDKExternalHttpCallout" name="Documentaction.com.veeva.vault.custom.actions.vSDKExternalHttpCallout" configuredLabel="SDK: External Http Callout" /></actions></rule><rule><actions><action type="Documentaction.com.veeva.vault.custom.actions.vSDKVaultToVaultHttpCalloutAction" name="Documentaction.com.veeva.vault.custom.actions.vSDKVaultToVaultHttpCalloutAction" configuredLabel="SDK: Vault To Vault Http Callout" /></actions></rule><rule><actions><action type="CHECK_USER_ACTION"><UserAction actionType="RunWorkflow" workflowKey="http_workflow__c" label="Start HTTP Workflow" publicKey="start_webinar_workflow__c" /></action></actions></rule></rules>
+		})
+	)
+);

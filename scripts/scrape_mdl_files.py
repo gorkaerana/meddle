@@ -12,9 +12,14 @@ from base64 import b64decode
 import json
 import os
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Generator
+from zipfile import ZipFile
 
 import httpx
+
+
+here = Path(__file__).parent
 
 
 class GithubClient(httpx.Client):
@@ -95,29 +100,72 @@ def cli() -> Path:
         if arguments.out_dir is None
         else Path(arguments.out_dir).resolve()
     )
+    out_dir.mkdir(exist_ok=True)
+    assert out_dir.is_dir()
     return out_dir
+
+
+def download_mdl_file(metadata: dict, github_client: GithubClient, out_dir: Path):
+    path, url = metadata["path"], metadata["url"]
+    assert path.endswith(".mdl")
+    out_path = out_dir / Path(path).name
+    content_response = github_client.get(url)
+    mdl_content = b64decode(content_response.json()["content"])
+    out_path.write_bytes(mdl_content)
+    print(f"Wrote {out_path}")
+    return str(out_path.relative_to(out_dir)), url
+
+
+def download_mdl_files_from_vpk(
+    metadata: dict, github_client: GithubClient, out_dir: Path
+):
+    path, url = metadata["path"], metadata["url"]
+    vpk_dir = out_dir / Path(path).stem
+    assert path.endswith(".vpk")
+    vpk_dir.mkdir(exist_ok=True)
+    content_response = github_client.get(url)
+    vpk_content = b64decode(content_response.json()["content"])
+    with TemporaryDirectory() as tmp_dir:
+        tmp_path = Path(tmp_dir) / Path(path).stem
+        tmp_path.write_bytes(vpk_content)
+        with ZipFile(tmp_path) as zip_file:
+            for file_name in zip_file.namelist():
+                if (not file_name.endswith(".mdl")) or file_name.startswith("__MACOSX"):
+                    # For the second clause above, see
+                    # https://apple.stackexchange.com/questions/373450/why-are-almost-blank-files-being-created-by-macos-and-applications
+                    continue
+                with zip_file.open(file_name) as zipped_mdl_file:
+                    out_path = vpk_dir / Path(file_name).name
+                    out_path.write_bytes(zipped_mdl_file.read())
+                    print(f"Wrote {out_path}")
+                    yield str(out_path.relative_to(out_dir)), url
 
 
 def main(out_dir: Path):
     """Iterate over all repositories and files under GitHub user `veeva`, and save
     to `out_dir` those with extension `.mdl`.
     """
+    (out_dir / "README.md").write_text(
+        f"Content scrapped with `{Path(__file__).relative_to(here.parent)}`"
+    )
     outdir_to_url = {}
     github_client = GithubClient(os.environ["GITHUB_TOKEN"])
     for repo_metadata in user_repos("veeva", github_client):
         repo_url = repo_metadata["url"]
         for blob_metadata in repo_files(repo_url, github_client):
-            path, url = blob_metadata["path"], blob_metadata["url"]
-            if not path.endswith(".mdl"):
+            path = blob_metadata["path"]
+            if path.endswith(".vpk"):
+                downloads = download_mdl_files_from_vpk(
+                    blob_metadata, github_client, out_dir
+                )
+                outdir_to_url.update(downloads)
+            elif path.endswith(".mdl"):
+                out_path, url = download_mdl_file(blob_metadata, github_client, out_dir)
+                outdir_to_url[out_path] = url
+            else:
                 continue
-            out_path = out_dir / Path(path).name
-            content_response = github_client.get(url)
-            mdl_content = b64decode(content_response.json()["content"])
-            out_path.write_bytes(mdl_content)
-            print(f"Wrote {out_path}")
-            outdir_to_url[str(out_path.name)] = url
     sources_path = out_dir / "source_urls.json"
-    sources_path.write_text(json.dumps(outdir_to_url))
+    sources_path.write_text(json.dumps(outdir_to_url, indent=4))
     print(f"Wrote {sources_path}")
 
 

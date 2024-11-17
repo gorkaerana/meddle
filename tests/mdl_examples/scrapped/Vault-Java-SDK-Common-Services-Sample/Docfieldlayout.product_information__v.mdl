@@ -1,0 +1,13 @@
+RECREATE Docfieldlayout product_information__v (
+   label('Product Information'),
+   active(true),
+   icon('UNDEFINED'),
+   order(2),
+   fields('Docfield.country__c',
+      'Docfield.product__c',
+      'Docfield.product_application__c',
+      'Docfield.product_type__c'),
+   show_in_edit_mode(true),
+   allow_field_assignment(true),
+   panel('Documentpanel.doc_info_information__sys')
+);

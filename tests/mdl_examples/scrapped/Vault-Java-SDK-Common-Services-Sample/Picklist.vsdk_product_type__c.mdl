@@ -1,0 +1,24 @@
+RECREATE Picklist vsdk_product_type__c (
+   label('VSDK Product Type'),
+   active(true),
+   Picklistentry drug__c(
+      value('Drug'),
+      order(0),
+      active(true)
+   ),
+   Picklistentry device__c(
+      value('Device'),
+      order(1),
+      active(true)
+   ),
+   Picklistentry biologic__c(
+      value('Biologic'),
+      order(2),
+      active(true)
+   ),
+   Picklistentry leeches__c(
+      value('Leeches'),
+      order(3),
+      active(false)
+   )
+);

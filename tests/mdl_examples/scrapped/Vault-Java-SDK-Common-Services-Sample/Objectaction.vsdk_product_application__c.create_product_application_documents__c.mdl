@@ -1,0 +1,8 @@
+RECREATE Objectaction vsdk_product_application__c.create_product_application_documents__c (
+   label('Create Product Application Documents'),
+   description(),
+   parameters(),
+   action('Recordaction.com.veeva.vault.custom.recordactions.VsdkCreateProductApplicationDocumentAction'),
+   active(true),
+   available_all_states(true)
+);

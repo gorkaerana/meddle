@@ -1,0 +1,9 @@
+RECREATE Jobmetadata vsdk_product_application_update_job__c (
+   label('VSDK Product Application Update Job'),
+   active(true),
+   chunk_size(250),
+   single_instance_states(),
+   description(),
+   job_code('Sdkjob.com.veeva.vault.custom.jobs.VsdkProductApplicationUpdateJob'),
+   queue()
+   );

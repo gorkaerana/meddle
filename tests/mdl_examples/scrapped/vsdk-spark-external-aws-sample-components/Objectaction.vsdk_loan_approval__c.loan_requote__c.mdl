@@ -1,0 +1,8 @@
+RECREATE Objectaction vsdk_loan_approval__c.loan_requote__c (
+   label('Loan re-quote'),
+   description(),
+   parameters(),
+   action('Recordaction.com.veeva.vault.custom.actions.vSdkSparkExternalAwsSampleAction'),
+   active(true),
+   available_all_states(false)
+);

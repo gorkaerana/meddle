@@ -1,0 +1,8 @@
+RECREATE Objectvalidation access_request__c.new_user_email__c (
+   label('New User Email'),
+   active(true),
+   expression('Not(user_type__c = ''new_user__c'' && IsBlank(new_user_email__c))'),
+   description(),
+   error_message('New User Email Required'),
+   error_location('new_user_email__c')
+);

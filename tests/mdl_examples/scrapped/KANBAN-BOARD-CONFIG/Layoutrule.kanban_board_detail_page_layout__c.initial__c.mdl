@@ -1,0 +1,10 @@
+RECREATE Layoutrule kanban_board_detail_page_layout__c.initial__c (
+   active(true),
+   description(),
+   expression('IsBlank(created_date__v)'),
+   hide_controls(),
+   hide_fields('api_name__c'),
+   hide_sections('system_details__c'),
+   label('Initial'),
+   order(100)
+);

@@ -1,0 +1,34 @@
+RECREATE Tab vsdk_objects__c (
+   active(true),
+   label('VSDK Objects'),
+   modal_create_record(false),
+   order(204),
+   parent(),
+   prevent_create(false),
+   Subtab vsdk_products__c(
+      active(true),
+      all_view_label('All VSDK Products'),
+      filter_criteria('[]'),
+      label('VSDK Products'),
+      modal_create_record(false),
+      my_view_label('My VSDK Products'),
+      object('vsdk_product__c'),
+      order(0),
+      parent('vsdk_objects__c'),
+      prevent_create(false),
+      recent_view_label('Recent VSDK Products')
+   ),
+   Subtab vsdk_product_applications__c(
+      active(true),
+      all_view_label('All VSDK Product Applications'),
+      filter_criteria('[]'),
+      label('VSDK Product Applications'),
+      modal_create_record(false),
+      my_view_label('My VSDK Product Applications'),
+      object('vsdk_product_application__c'),
+      order(100),
+      parent('vsdk_objects__c'),
+      prevent_create(false),
+      recent_view_label('Recent VSDK Product Applications')
+   )
+);

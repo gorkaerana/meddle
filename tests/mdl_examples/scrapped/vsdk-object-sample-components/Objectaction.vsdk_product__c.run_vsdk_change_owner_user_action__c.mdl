@@ -1,0 +1,8 @@
+RECREATE Objectaction vsdk_product__c.run_vsdk_change_owner_user_action__c (
+   label('Run vSDK Change Owner User Action'),
+   description('This is a custom user action for use with the "vsdk-object-sample" project.'),
+   parameters(),
+   action('Recordaction.com.veeva.vault.custom.actions.vSDKChangeOwnerUserAction'),
+   active(true),
+   available_all_states(true)
+);

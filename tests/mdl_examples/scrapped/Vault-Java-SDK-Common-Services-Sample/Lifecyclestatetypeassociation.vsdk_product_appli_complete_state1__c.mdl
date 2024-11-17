@@ -1,0 +1,10 @@
+RECREATE Lifecyclestatetypeassociation vsdk_product_appli_complete_state1__c (
+   label(),
+   active(true),
+   document_lifecycle(),
+   state_type('Lifecyclestatetype.complete_state__sys'),
+   description(),
+   object_lifecycle_state('Objectlifecyclestate.completed_state__c'),
+   document_lifecycle_state(),
+   object_lifecycle('Objectlifecycle.vsdk_product_application_lifecycle__c')
+   );

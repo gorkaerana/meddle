@@ -1,0 +1,8 @@
+RECREATE Jobmetadata transfer_product_to_new_store__c (
+   active (true),
+   label ('Transfer Store Inventory to new Store'),
+   description('Transfer Store Inventory to new store'),
+   chunk_size(10),
+   job_code('Sdkjob.com.veeva.vault.custom.processors.JobServiceSampleTransferProductsToNewStoreJob')
+  );
+d

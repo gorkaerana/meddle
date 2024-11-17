@@ -1,0 +1,8 @@
+RECREATE Objectvalidation access_request__c.existing_user__c (
+   label('Existing User'),
+   active(true),
+   expression('Not(user_type__c = ''existing_user__c'' && IsBlank(existing_user__cr.username__sys))'),
+   description(),
+   error_message('Existing User Required'),
+   error_location('existing_user__c')
+);

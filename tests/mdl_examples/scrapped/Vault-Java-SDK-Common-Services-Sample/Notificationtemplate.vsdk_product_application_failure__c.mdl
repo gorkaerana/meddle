@@ -1,0 +1,12 @@
+RECREATE Notificationtemplate vsdk_product_application_failure__c (
+   label('VSDK Product Application Failure'),
+   active(true),
+   description(''),
+   referenced_component('Object.vsdk_product_application__c'),
+   subject('VSDK Product Applications failed to update'),
+   notification('${Custom.failed_tasks} out of ${Custom.number_of_tasks} failed. The following VSDK Product Application records failed to update:
+${Custom.product_applications}'),
+   email_body('${Custom.failed_tasks} out of ${Custom.number_of_tasks} failed. The following VSDK Product Application records failed to update:
+${Custom.product_applications}'),
+   entity_type('object')
+);

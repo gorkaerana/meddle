@@ -1,0 +1,153 @@
+RECREATE Doclifecycle vsdk_document_lifecycle__c (
+   label('vSDK Document Lifecycle'),
+   active(true),
+   description('This is a sample document lifecycle for the "vsdk-document-sample" project.'),
+   state_labels('base:general:starting',
+      'base:general:planned'),
+   labeled_states('Doclifecyclestate.draft__c',
+      'Doclifecyclestate.planned__v'),
+   expiration(),
+   signature_pages(),
+   Doclifecyclerole reviewer__v(
+      label('Reviewer'),
+      active(true),
+      description('System Provided Role'),
+      application_role('reviewer__c'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole editor__v(
+      label('Editor'),
+      active(true),
+      description('System Provided Role'),
+      application_role('editor__v'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole document_change_control_approver__v(
+      label('Document Change Control Approver'),
+      active(true),
+      description('System Provided Role'),
+      application_role('document_change_control_approver__v'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole document_change_control_reviewer__v(
+      label('Document Change Control Reviewer'),
+      active(true),
+      description('System Provided Role'),
+      application_role('document_change_control_reviewer__v'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole trainee__v(
+      label('Trainee'),
+      active(true),
+      description('System Provided Role'),
+      application_role('trainee__c'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole owner__v(
+      label('Owner'),
+      active(true),
+      description('System Provided Role'),
+      application_role('owner__v'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole approver__v(
+      label('Approver'),
+      active(true),
+      description('System Provided Role'),
+      application_role('approver__c'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole coordinator__v(
+      label('Coordinator'),
+      active(true),
+      description('System Provided Role'),
+      application_role('coordinator__c'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole viewer__v(
+      label('Viewer'),
+      active(true),
+      description('System Provided Role'),
+      application_role('viewer__v'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole consumer__v(
+      label('Consumer'),
+      active(true),
+      description('System Provided Role'),
+      application_role('consumer__c'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclestate draft__c(
+      label('Draft'),
+      active(true),
+      description('Initial state'),
+      order(0),
+      cancel_state(),
+      overlay(),
+      entry_criteria(),
+      entry_action(),
+      user_action({<?xml version="1.0" encoding="UTF-8"?>
+<rules><rule><actions><action type="CHECK_USER_ACTION"><UserAction actionType="StateChange" newState="entry_action_via_sdk__c" label="Change state to &quot;Entry Action via SDK&quot;" publicKey="change_state_to_entry_action_via_sdk__c" /></action></actions></rule><rule><actions><action type="Documentaction.com.veeva.vault.custom.actions.ChangeFieldsDocumentUserAction" name="Documentaction.com.veeva.vault.custom.actions.ChangeFieldsDocumentUserAction" configuredLabel="Run vSDK Change Field Document Action" /></actions></rule></rules>
+}),
+      security_settings()
+   ),
+   Doclifecyclestate entry_action_via_sdk__c(
+      label('Entry Action via SDK'),
+      active(true),
+      description('Sample state for demonstrating a Document Entry Action via the Vault Java SDK.'),
+      order(2),
+      cancel_state(),
+      overlay(),
+      entry_criteria(),
+      entry_action({<?xml version="1.0" encoding="UTF-8"?>
+<rules><rule><actions><action type="Documentaction.com.veeva.vault.custom.actions.CreateRecordsDocumentEntryAction" name="Documentaction.com.veeva.vault.custom.actions.CreateRecordsDocumentEntryAction" /></actions></rule></rules>
+}),
+      user_action({<?xml version="1.0" encoding="UTF-8"?>
+<rules><rule><actions><action type="CHECK_USER_ACTION"><UserAction actionType="StateChange" newState="draft__c" label="Return to Draft State" publicKey="return_to_draft_state__c" /></action></actions></rule></rules>
+}),
+      security_settings()
+   ),
+   Doclifecyclestate planned__v(
+      label('Planned'),
+      active(false),
+      description(''),
+      order(100),
+      cancel_state(),
+      overlay(),
+      entry_criteria(),
+      entry_action(),
+      user_action(),
+      security_settings()
+   )
+);

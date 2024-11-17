@@ -1,0 +1,136 @@
+RECREATE Doclifecycle vsdk_spark_copy_doc_lifecycle__c (
+   label('vSDK Spark Copy Doc Lifecycle'),
+   active(true),
+   description('This is a sample document lifecycle for the "vsdk-spark-doc-copy-sample" project.'),
+   state_labels('base:general:superseded',
+      'base:general:starting',
+      'base:general:steady',
+      'base:general:planned'),
+   labeled_states('Doclifecyclestate.superseded__c',
+      'Doclifecyclestate.draft__c',
+      'Doclifecyclestate.approved__c',
+      'Doclifecyclestate.planned__v'),
+   expiration(),
+   signature_pages(),
+   overlays(),
+   Doclifecyclerole approver__v(
+      label('Approver'),
+      active(true),
+      description('System Provided Role'),
+      application_role('approver__c'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole consumer__v(
+      label('Consumer'),
+      active(true),
+      description('System Provided Role'),
+      application_role('consumer__c'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole coordinator__v(
+      label('Coordinator'),
+      active(true),
+      description('System Provided Role'),
+      application_role('coordinator__c'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole editor__v(
+      label('Editor'),
+      active(true),
+      description('System Provided Role'),
+      application_role('editor__v'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole owner__v(
+      label('Owner'),
+      active(true),
+      description('System Provided Role'),
+      application_role('owner__v'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole reviewer__v(
+      label('Reviewer'),
+      active(true),
+      description('System Provided Role'),
+      application_role('reviewer__c'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclerole viewer__v(
+      label('Viewer'),
+      active(true),
+      description('System Provided Role'),
+      application_role('viewer__v'),
+      note_color(),
+      security_options({<?xml version="1.0" encoding="UTF-8"?>
+<securityOptions><systemMaintained>true</systemMaintained><defaultingRules><defaultingRule>whenStartingWorkflows</defaultingRule></defaultingRules></securityOptions>
+})
+   ),
+   Doclifecyclestate approved__c(
+      label('Approved'),
+      active(true),
+      description('State in which documents are copied to a target Vault'),
+      order(2),
+      cancel_state(),
+      entry_criteria(),
+      entry_action({<?xml version="1.0" encoding="UTF-8"?>
+<rules><rule><actions><action type="CHECK_ENTRY_ACTION"><EntryAction type="SetNewMajorVersion" /></action></actions></rule><rule><actions><action type="CHECK_ENTRY_ACTION"><EntryAction type="SetPreviouslyApprovedToSuperseded" /></action></actions></rule><rule><actions><action type="Documentaction.com.veeva.vault.custom.actions.vSDKDocCopyDocumentAction" name="Documentaction.com.veeva.vault.custom.actions.vSDKDocCopyDocumentAction" /></actions></rule></rules>
+}),
+      user_action({<?xml version="1.0" encoding="UTF-8"?>
+<rules><rule><actions><action type="CHECK_USER_ACTION"><UserAction actionType="StateChange" newState="draft__c" label="Make Draft" publicKey="make_draft__c" /></action></actions></rule></rules>
+}),
+      security_settings()
+   ),
+   Doclifecyclestate draft__c(
+      label('Draft'),
+      active(true),
+      description('Initial state'),
+      order(0),
+      cancel_state(),
+      entry_criteria(),
+      entry_action(),
+      user_action({<?xml version="1.0" encoding="UTF-8"?>
+<rules><rule><actions><action type="CHECK_USER_ACTION"><UserAction actionType="StateChange" newState="approved__c" label="Approve Document" publicKey="approve_document__c" /></action></actions></rule></rules>
+}),
+      security_settings()
+   ),
+   Doclifecyclestate planned__v(
+      label('Planned'),
+      active(false),
+      description(''),
+      order(100),
+      cancel_state(),
+      entry_criteria(),
+      entry_action(),
+      user_action(),
+      security_settings()
+   ),
+   Doclifecyclestate superseded__c(
+      label('Superseded'),
+      active(true),
+      description(''),
+      order(3),
+      cancel_state(),
+      entry_criteria(),
+      entry_action(),
+      user_action(),
+      security_settings()
+   )
+);

@@ -1,0 +1,24 @@
+RECREATE Picklist access_request_priority__c (
+   label('Access Request Priority'),
+   active(true),
+   Picklistentry p1__c(
+      value('High'),
+      order(0),
+      active(true)
+   ),
+   Picklistentry p2__c(
+      value('Medium'),
+      order(1),
+      active(true)
+   ),
+   Picklistentry p3__c(
+      value('Low'),
+      order(2),
+      active(true)
+   ),
+   Picklistentry undefined__c(
+      value('Undefined'),
+      order(3),
+      active(true)
+   )
+);

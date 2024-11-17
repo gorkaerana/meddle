@@ -1,0 +1,13 @@
+RECREATE Tab claims_warranties__c (
+   active(true),
+   all_view_label('All Claims Warranties'),
+   filter_criteria('[]'),
+   label('Claims Warranties'),
+   modal_create_record(false),
+   my_view_label('My Claims Warranties'),
+   object('vsdk_claims_warranty__c'),
+   order(500),
+   parent(),
+   prevent_create(false),
+   recent_view_label('Recent Claims Warranties')
+);

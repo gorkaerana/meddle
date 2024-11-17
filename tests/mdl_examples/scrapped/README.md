@@ -1,1 +1,1 @@
-Populated with `scripts`
+Content scrapped with `scripts/scrape_mdl_files.py`

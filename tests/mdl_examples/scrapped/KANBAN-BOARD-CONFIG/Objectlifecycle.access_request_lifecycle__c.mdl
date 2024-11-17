@@ -1,0 +1,82 @@
+RECREATE Objectlifecycle access_request_lifecycle__c (
+   label('Access Request Lifecycle'),
+   state_labels(),
+   labeled_states(),
+   active(true),
+   starting_state('Objectlifecyclestate.draft_state__c'),
+   description(),
+   Objectlifecyclestate completed_state__c(
+      label('Completed'),
+      active(true),
+      record_inactive(),
+      record_status('inactive__v'),
+      description()
+   ),
+   Objectlifecyclestate draft_state__c(
+      label('Draft'),
+      active(true),
+      record_inactive(),
+      record_status('active__v'),
+      description()
+   ),
+   Objectlifecyclestate pending_state__c(
+      label('Pending'),
+      active(true),
+      record_inactive(),
+      record_status('active__v'),
+      description()
+   ),
+   Objectlifecyclestate rejected_state__c(
+      label('Rejected'),
+      active(true),
+      record_inactive(),
+      record_status('inactive__v'),
+      description()
+   ),
+   Objectlifecyclestateuseraction draft_state__c.send_for_approval_useraction__c(
+      label('Send for Approval'),
+      rule({<?xml version="1.0" encoding="UTF-8"?>
+<rule><actions><action type="LIFECYCLE_RUN_WORKFLOW_ACTION" objectWorkflow="Objectworkflow.access_request_approval__c" /></actions></rule>
+}),
+      order(1000)
+   ),
+   Objectlifecyclerole owner__v(
+      active(true),
+      application_role('Applicationrole.owner__v'),
+      permissions()
+   ),
+   Objectlifecyclerole editor__v(
+      active(true),
+      application_role('Applicationrole.editor__v'),
+      permissions()
+   ),
+   Objectlifecyclerole viewer__v(
+      active(true),
+      application_role('Applicationrole.viewer__v'),
+      permissions()
+   ),
+   Objectlifecyclepermission owner_read__c(
+      states('Objectlifecyclestate.completed_state__c',
+         'Objectlifecyclestate.draft_state__c',
+         'Objectlifecyclestate.pending_state__c',
+         'Objectlifecyclestate.rejected_state__c'),
+      role('Objectlifecyclerole.owner__v'),
+      permission('Read')
+   ),
+   Objectlifecyclepermission editor_read__c(
+      states('Objectlifecyclestate.completed_state__c',
+         'Objectlifecyclestate.draft_state__c',
+         'Objectlifecyclestate.pending_state__c',
+         'Objectlifecyclestate.rejected_state__c'),
+      role('Objectlifecyclerole.editor__v'),
+      permission('Read')
+   ),
+   Objectlifecyclepermission viewer_read__c(
+      states('Objectlifecyclestate.completed_state__c',
+         'Objectlifecyclestate.draft_state__c',
+         'Objectlifecyclestate.pending_state__c',
+         'Objectlifecyclestate.rejected_state__c'),
+      role('Objectlifecyclerole.viewer__v'),
+      permission('Read')
+   )
+);

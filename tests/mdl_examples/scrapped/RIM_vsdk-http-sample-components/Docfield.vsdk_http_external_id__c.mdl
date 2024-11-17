@@ -1,0 +1,4 @@
+ALTER Docfield vsdk_http_external_id__c (
+   shared(false),
+   defined_in('Doctype.vsdk_http_doctype__c')
+);

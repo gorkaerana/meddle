@@ -1,0 +1,14 @@
+RECREATE Picklist integration_status__c (
+   label('Integration Status'),
+   active(true),
+   Picklistentry processing_successful__c(
+      value('Processing Successful'),
+      order(0),
+      active(true)
+   ),
+   Picklistentry processing_failed__c(
+      value('Processing Failed'),
+      order(1),
+      active(true)
+   )
+);

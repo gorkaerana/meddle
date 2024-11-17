@@ -1,0 +1,14 @@
+RECREATE Picklist access_request_user_type__c (
+   label('Access Request User Type'),
+   active(true),
+   Picklistentry existing_user__c(
+      value('Existing User'),
+      order(0),
+      active(true)
+   ),
+   Picklistentry new_user__c(
+      value('New User'),
+      order(1),
+      active(true)
+   )
+);

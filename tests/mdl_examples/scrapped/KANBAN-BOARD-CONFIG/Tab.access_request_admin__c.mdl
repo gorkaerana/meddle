@@ -1,0 +1,64 @@
+RECREATE Tab access_request_admin__c (
+   active(true),
+   label('Access Request Admin'),
+   modal_create_record(false),
+   order(700),
+   parent(),
+   prevent_create(false),
+   Subtab access_requests__c(
+      active(true),
+      all_view_label('All Access Requests'),
+      filter_criteria('[]'),
+      label('Access Requests'),
+      modal_create_record(false),
+      my_view_label('My Access Requests'),
+      object('access_request__c'),
+      order(0),
+      parent('access_request_admin__c'),
+      prevent_create(false),
+      recent_view_label('Recent Access Requests')
+   ),
+   Subtab dashboard_prioritization__c(
+      active(true),
+      label('Dashboard: Prioritization'),
+      modal_create_record(false),
+      order(100),
+      parent('access_request_admin__c'),
+      prevent_create(false),
+      send_session_via_post_message(true),
+      url('https://{INSERT_CLOUDFRONT_DNS}/index.html?vaultDNS=${Vault.domain}&board=access_request_priority_board__c')
+   ),
+   Subtab dashboard_security_profiles__c(
+      active(true),
+      label('Dashboard: Security Profiles'),
+      modal_create_record(false),
+      order(200),
+      parent('access_request_admin__c'),
+      prevent_create(false),
+      send_session_via_post_message(true),
+      url('https://{INSERT_CLOUDFRONT_DNS}/index.html?vaultDNS=${Vault.domain}&board=access_request_security_profiles_board__c')
+   ),
+   Subtab dashboard_user_type__c(
+      active(true),
+      label('Dashboard: User Type'),
+      modal_create_record(false),
+      order(300),
+      parent('access_request_admin__c'),
+      prevent_create(false),
+      send_session_via_post_message(true),
+      url('https://{INSERT_CLOUDFRONT_DNS}/index.html?vaultDNS=${Vault.domain}&board=access_request_user_types_board__c')
+   ),
+   Subtab dashboard_configuration__c(
+      active(true),
+      all_view_label('All Dashboard: Configuration'),
+      filter_criteria('[]'),
+      label('Dashboard: Configuration'),
+      modal_create_record(true),
+      my_view_label('My Dashboard: Configuration'),
+      object('kanban_board__c'),
+      order(400),
+      parent('access_request_admin__c'),
+      prevent_create(false),
+      recent_view_label('Recent Dashboard: Configuration')
+   )
+);

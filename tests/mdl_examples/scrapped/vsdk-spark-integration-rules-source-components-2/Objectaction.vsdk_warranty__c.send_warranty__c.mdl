@@ -1,0 +1,8 @@
+RECREATE Objectaction vsdk_warranty__c.send_warranty__c (
+   label('Send Warranty'),
+   description(),
+   parameters(),
+   action('Recordaction.com.veeva.vault.custom.actions.vSdkSendWarrantyUserAction'),
+   active(true),
+   available_all_states(true)
+);

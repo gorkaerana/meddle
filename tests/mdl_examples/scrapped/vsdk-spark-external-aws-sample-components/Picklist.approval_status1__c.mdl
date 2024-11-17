@@ -1,0 +1,24 @@
+RECREATE Picklist approval_status1__c (
+   label(' Approval Status'),
+   active(true),
+   Picklistentry pending_loan_approval__c(
+      value('Pending Loan Approval'),
+      order(0),
+      active(true)
+   ),
+   Picklistentry send_for_approval_failed__c(
+      value('Send For Approval Failed'),
+      order(1),
+      active(true)
+   ),
+   Picklistentry approved__c(
+      value('Approved'),
+      order(2),
+      active(true)
+   ),
+   Picklistentry rejected__c(
+      value('Rejected'),
+      order(3),
+      active(true)
+   )
+);

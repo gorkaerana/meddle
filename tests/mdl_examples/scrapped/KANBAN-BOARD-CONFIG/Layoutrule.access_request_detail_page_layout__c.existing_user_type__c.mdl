@@ -1,0 +1,10 @@
+RECREATE Layoutrule access_request_detail_page_layout__c.existing_user_type__c (
+   active(true),
+   description(),
+   expression('user_type__c != ''existing_user__c'''),
+   hide_controls(),
+   hide_fields(),
+   hide_sections('existing_user_details__c'),
+   label('Existing User Type'),
+   order(200)
+);

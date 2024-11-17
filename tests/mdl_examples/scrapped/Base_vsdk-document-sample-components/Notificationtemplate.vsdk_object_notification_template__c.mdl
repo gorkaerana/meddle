@@ -1,0 +1,12 @@
+RECREATE Notificationtemplate vsdk_object_notification_template__c (
+   label('vSDK Object Notification Template'),
+   active(true),
+   description('This is a sample notification for use with the Vault Java SDK "vsdk-document-sample" project.'),
+   referenced_component('Object.vsdk_document_task__c'),
+   subject('vSDK Object Notification Message'),
+   notification('You have received a vSDK Object Notification Message for ${Custom.objectRecordName}.'),
+   email_body('<p>Vault: ${vaultName} </p>
+<p>${notificationMessage}</p>
+<a href="${uiBaseExtUrl}/#v/${Custom.objectRecordName}">Link to object record.</a>'),
+   entity_type('object')
+);
