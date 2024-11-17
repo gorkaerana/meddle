@@ -5,4 +5,3 @@ RECREATE Jobmetadata transfer_product_to_new_store__c (
    chunk_size(10),
    job_code('Sdkjob.com.veeva.vault.custom.processors.JobServiceSampleTransferProductsToNewStoreJob')
   );
-d
