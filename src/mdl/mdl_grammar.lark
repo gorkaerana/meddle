@@ -66,7 +66,7 @@ value : xml
 // `(?!')` avoids from matching `'`, cause `+` is a greedy operator
 // `| "''"` needed cause the Lark lexer does not allow zero-width terminals
 // TODO: fix `string` rule so it matches values like `'user_type__c != ''existing_user__c'''`
-string : "'" /((?!').)+/s "'" | "''"
+string : "'" /([^']|'')+/s "'" | "''"
 number : INT | DECIMAL
 boolean : true | false
 // `(?!\})` avoids from matching `}`, cause `+` is a greedy operator
