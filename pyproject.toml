@@ -26,6 +26,12 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["src/mdl"]
 
+[tool.mypy]
+exclude = [".venv", "tests"]
+
+[tool.pyright]
+ignore = [".venv", "tests"]
+
 [dependency-groups]
 dev = [
     "pyright>=1.1.387",
