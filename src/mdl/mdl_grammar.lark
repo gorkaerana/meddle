@@ -52,7 +52,7 @@ drop : "DROP"
 
 attribute : attribute_name "(" attribute_value ")"
 
-attribute_name : /[a-z0-9_]+/
+attribute_name : /[a-z]{1}[a-zA-Z0-9_]+/
 
 attribute_value : value? ("," value)*
 
@@ -65,6 +65,7 @@ value : xml
 
 // `(?!')` avoids from matching `'`, cause `+` is a greedy operator
 // `| "''"` needed cause the Lark lexer does not allow zero-width terminals
+// TODO: fix `string` rule so it matches values like `'user_type__c != ''existing_user__c'''`
 string : "'" /((?!').)+/s "'" | "''"
 number : INT | DECIMAL
 boolean : true | false
