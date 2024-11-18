@@ -10,7 +10,7 @@
   - [Writing](#writing)
   - [Validating](#validating)
 - [Limitations](#limitations)
-  - [Unsupported data types](#unsupported-data-type)
+  - [Unsupported data types](#unsupported-data-types)
   - [Validation](#validation)
 
 ## Recipes
