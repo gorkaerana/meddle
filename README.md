@@ -2,7 +2,18 @@
 
 `meddle` is a Python library to read, write, manipulate, manage, and validate [Veeva Vault MDL](https://developer.veevavault.com/mdl/#mdl-overview).
 
-## Tutorial
+## Table of contents
+- [Recipes](#recipes)
+  - [Reading](#reading)
+  - [Comparing](#comparing)
+  - [Manipulating](#manipulating)
+  - [Writing](#writing)
+  - [Validating](#validating)
+- [Limitations](#limitations)
+  - [Unsupported data types](#unsupported-data-type)
+  - [Validation](#validation)
+
+## Recipes
 ### Reading
 E.g., given a MDL command from [Veeva's own documentation](https://developer.veevavault.com/mdl/#step-1-create-a-picklist), we can load it into `meddle.Command` as below
 
@@ -54,7 +65,7 @@ Building upon the previous example, load a second MDL command [from Veeva's docu
 ```python
 # From https://developer.veevavault.com/mdl/#step-4-alter-the-object-and-picklist
 # The closing comma of subcommand `MODIFY` had to be corrected to a semicolon, 
-# since Veeva contradicts its own documentation.
+# since Veeva clashes with its own documentation.
 alter_command = Command.loads(
     """ALTER Picklist vmdl_options__c (
 label('vMDL Options'),
@@ -217,3 +228,49 @@ except ValidationError as e:
 Ooopsie #1: Attribute 'label' is constrained to maximum length 40. Got 'This is a long string longer than the maximum allowed length of 40'.
 Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of type <class 'int'>.
 ```
+
+## Limitations
+
+### Unsupported data types
+`meddle` does not support [`SdkCode` and `Expression` attribute data types](https://developer.veevavault.com/mdl/#attributes-data-types), since no meaningful real world examples against which to test the tool could be found. More specifically:
+
+- The attributes (and corresponding components) with `SdkCode` data type are listed in the below table. No real world usage of any of them could be found.
+
+| Component name | Attribute name |
+|---|---|
+| `Customwebapi` | `source_code` |
+| `Documentaction` | `source_code` |
+| `Emailprocessor` | `source_code` |
+| `Messagedeliveryeventhandler` | `source_code` |
+| `Messageprocessor` | `source_code` |
+| `Recordaction` | `source_code` |
+| `Recordmergeeventhandler` | `source_code` |
+| `Recordroletrigger` | `source_code` |
+| `Recordtrigger` | `source_code` |
+| `Recordworkflowaction` | `source_code` |
+| `Sdkjob` | `source_code` |
+| `Userdefinedclass` | `source_code` |
+| `Userdefinedmodel` | `source_code` |
+| `Userdefinedservice` | `source_code` |
+
+- The attributes (and corresponding components) with `Expression` data type are listed in the below table. Real world usage examples could be found for only two of them:
+  - `formula` in [KANBAN-BOARD-CONFIG.vpk](https://github.com/veeva/Vault-Kanban-Board/blob/main/KANBAN-BOARD-CONFIG.vpk), which counters Veeva's documentation and does not enclose the attribute value in square brackets. See also [the scraped file](tests/mdl_examples/scrapped/KANBAN-BOARD-CONFIG/Object.access_request__c.mdl).
+  - `relationship_criteria` which has plenty of usage (as a quick grep in `tests/mdl_examples/scrapped` will show) but the attribute value is empty for every case.
+
+| Component name | Attribute name |
+|---|---|
+| `Docfield` | `formula` |
+| `Queryobjectrule` | `filter_clause` |
+| `Job` | `trigger_date` |
+| `Field` | `relationship_criteria` |
+| `Typefield` | `relationship_criteria` |
+| `Sharingrule` | `criteria` |
+
+### Validation
+Some of the MDL examples available online disagree with Veeva's documentation, as per the below table. In such cases, `meddle` follows the documentation.
+| MDL file | Source (in this repo) | Source (URL) | Reason |
+|---|---|---|---|
+| `Doclifecycle.vsdk_document_lifecycle__c.mdl` | | | Attribute name `overlay` is not allowed under component type `Doclifecyclestate`. Options are: `label`, `active`, `description`, `order`, `cancel_state`, `skip_cancel_state`, `entry_criteria`, `entry_action`, `user_action`, `security_settings`. |
+| `Object.vsdk_create_product_application__c.mdl` | | | Attribute `data_store` is an enum with allowed values `standard`, `raw`. Got `high_volume`. |
+| `Object.vsdk_product_application__c.mdl` | | | Attribute `data_store` is an enum with allowed values `standard`, `raw`. Got `high_volume`. |
+| `Object.vsdk_setting__c.mdl` | | | Attribute `data_store` is an enum with allowed values `standard`, `raw`. Got `high_volume`. |
