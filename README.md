@@ -101,6 +101,7 @@ Say we are only interested in
 - attribute `label` of `alter_command`, and
 - attribute `value` within the `MODIFY` subcommand of `alter_command`.
 
+We can manually delete any entries we are not interested in
 ```python
 del recreate_command_copy.components[0]
 del recreate_command_copy.attributes[1]
@@ -109,6 +110,22 @@ rpprint(recreate_command_copy)
 del alter_command_copy.commands[0].attributes[-1]
 del alter_command_copy.commands[-1]
 rpprint(recreate_command_copy)
+```
+
+Alternatively, and perhaps in a more programmable way
+
+```python
+recreate_command_copy.attributes = [attr for attr in recreate_command.attributes if attr.name == "label"]
+recreate_command_copy.components = []
+
+alter_command_copy.commands = [
+    cmd
+    for cmd in alter_command.commands
+    if cmd.command == "MODIFY" and cmd.component_type_name == "Picklistentry"
+]
+alter_command_copy.commands[0].attributes = [
+    attr for attr in alter_command_copy.attributes if attr.name == "value"
+]
 ```
 
 ### Writing
