@@ -255,7 +255,6 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
 | `Userdefinedclass` | `source_code` |
 | `Userdefinedmodel` | `source_code` |
 | `Userdefinedservice` | `source_code` |
-> Attributes with value data type `SdkCode`, and their corresponding components 
 
 | Component name | Attribute name |
 |---|---|
@@ -265,7 +264,6 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
 | `Field` | `relationship_criteria` |
 | `Typefield` | `relationship_criteria` |
 | `Sharingrule` | `criteria` |
-> Attributes with value data type `Expression`, and their corresponding components 
 
 ### Validation
 Some of the MDL examples available online disagree with Veeva's documentation, as per the below table. In such cases, `meddle.validation` follows the documentation.
@@ -279,4 +277,3 @@ Some of the MDL examples available online disagree with Veeva's documentation, a
 | Attribute `data_store` is an enum with allowed values `standard`, `raw`. Got `high_volume`.                                                                                                                                                          | [`Object.vsdk_create_product_application__c.mdl`](tests/mdl_examples/scrapped/Vault-Java-SDK-Common-Services-Sample/Object.vsdk_create_product_application__c.mdl)    | [`Object.vsdk_create_product_application__c.mdl`](https://api.github.com/repos/veeva/vsdk-common-services-sample/git/blobs/31ab1fbc19a6f5da946e5b4245b75c629e0c78f5) |
 | Attribute `data_store` is an enum with allowed values `standard`, `raw`. Got `high_volume`.                                                                                                                                                          | [`Object.vsdk_product_application__c.mdl`](tests/mdl_examples/scrapped/Vault-Java-SDK-Common-Services-Sample/Object.vsdk_product_application__c.mdl)                  | [`Object.vsdk_product_application__c.mdl`](https://api.github.com/repos/veeva/vsdk-common-services-sample/git/blobs/31ab1fbc19a6f5da946e5b4245b75c629e0c78f5)        |
 | Attribute `data_store` is an enum with allowed values `standard`, `raw`. Got `high_volume`.                                                                                                                                                          | [`Object.vsdk_setting__c.mdl`](tests/mdl_examples/scrapped/vsdk-user-defined-model-sample-components/Object.vsdk_setting__c.mdl)                                      | [`Object.vsdk_setting__c.mdl`](https://api.github.com/repos/veeva/vsdk-user-defined-model-sample/git/blobs/50fce60d9ccf40912b18dcd238baa2fe9bc9ef22)                 |
-> Validation issues discovered in Veeva MDL files.
