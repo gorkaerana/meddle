@@ -234,7 +234,10 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
 ### Unsupported data types
 `meddle` does not support [`SdkCode` and `Expression` attribute data types](https://developer.veevavault.com/mdl/#attributes-data-types), since no meaningful real world examples against which to test the tool could be found. More specifically:
 
-- The attributes (and corresponding components) with `SdkCode` data type are listed in the below table. No real world usage of any of them could be found.
+- The attributes (and corresponding components) with `SdkCode` data type are listed in the first of the two tables below. No real world usage of any of them could be found.
+- The attributes (and corresponding components) with `Expression` data type are listed in the second of the two tables below. Real world usage examples could be found for only two of them:
+  - `formula` in [KANBAN-BOARD-CONFIG.vpk](https://github.com/veeva/Vault-Kanban-Board/blob/main/KANBAN-BOARD-CONFIG.vpk), which counters Veeva's documentation and does not enclose the attribute value in square brackets. See also [the scraped file](tests/mdl_examples/scrapped/KANBAN-BOARD-CONFIG/Object.access_request__c.mdl).
+  - `relationship_criteria` which has plenty of usage (as a quick grep in `tests/mdl_examples/scrapped` will show) but the attribute value is empty for every case.
 
 | Component name | Attribute name |
 |---|---|
@@ -252,10 +255,7 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
 | `Userdefinedclass` | `source_code` |
 | `Userdefinedmodel` | `source_code` |
 | `Userdefinedservice` | `source_code` |
-
-- The attributes (and corresponding components) with `Expression` data type are listed in the below table. Real world usage examples could be found for only two of them:
-  - `formula` in [KANBAN-BOARD-CONFIG.vpk](https://github.com/veeva/Vault-Kanban-Board/blob/main/KANBAN-BOARD-CONFIG.vpk), which counters Veeva's documentation and does not enclose the attribute value in square brackets. See also [the scraped file](tests/mdl_examples/scrapped/KANBAN-BOARD-CONFIG/Object.access_request__c.mdl).
-  - `relationship_criteria` which has plenty of usage (as a quick grep in `tests/mdl_examples/scrapped` will show) but the attribute value is empty for every case.
+> Attributes with value data type `SdkCode`, and their corresponding components 
 
 | Component name | Attribute name |
 |---|---|
@@ -265,11 +265,12 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
 | `Field` | `relationship_criteria` |
 | `Typefield` | `relationship_criteria` |
 | `Sharingrule` | `criteria` |
+> Attributes with value data type `Expression`, and their corresponding components 
 
 ### Validation
 Some of the MDL examples available online disagree with Veeva's documentation, as per the below table. In such cases, `meddle.validation` follows the documentation.
-| Reason                                                                                                                                                                                                                                               | Source (in this repo)                                                                                                                                                 | Source (URL)                                                                                                                                                         |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Reason | Source (in this repo) | Source (URL) | 
+|---|---|---|
 | Attribute name `overlay` is not allowed under component type `Doclifecyclestate`. Options are: `label`, `active`, `description`, `order`, `cancel_state`, `skip_cancel_state`, `entry_criteria`, `entry_action`, `user_action`, `security_settings`. | [`Doclifecycle.vsdk_document_lifecycle__c.mdl`](tests/mdl_examples/scrapped/Base_vsdk-document-sample-components/Doclifecycle.vsdk_document_lifecycle__c.mdl)         | [`Doclifecycle.vsdk_document_lifecycle__c.mdl`](https://api.github.com/repos/veeva/vsdk-document-sample/git/blobs/15ccd5244ddf93a7dfa32e6828d1e06fbd235127)          |
 | Attribute name `overlay` is not allowed under component type `Doclifecyclestate`. Options are: `label`, `active`, `description`, `order`, `cancel_state`, `skip_cancel_state`, `entry_criteria`, `entry_action`, `user_action`, `security_settings`. | [`Doclifecycle.vsdk_document_lifecycle__c.mdl`](tests/mdl_examples/scrapped/Clinical_vsdk-document-sample-components/Doclifecycle.vsdk_document_lifecycle__c.mdl)     | [`Doclifecycle.vsdk_document_lifecycle__c.mdl`](https://api.github.com/repos/veeva/vsdk-document-sample/git/blobs/01e842cb1e100da154151a117f655d66ceffb85a)          |
 | Attribute name `overlay` is not allowed under component type `Doclifecyclestate`. Options are: `label`, `active`, `description`, `order`, `cancel_state`, `skip_cancel_state`, `entry_criteria`, `entry_action`, `user_action`, `security_settings`. | [`Doclifecycle.vsdk_document_lifecycle__c.mdl`](tests/mdl_examples/scrapped/Multichannel_vsdk-document-sample-components/Doclifecycle.vsdk_document_lifecycle__c.mdl) | [`Doclifecycle.vsdk_document_lifecycle__c.mdl`](https://api.github.com/repos/veeva/vsdk-document-sample/git/blobs/8cff63bbf1050f8e1e58ef0a9f16acf9d98afb37)          |
@@ -278,3 +279,4 @@ Some of the MDL examples available online disagree with Veeva's documentation, a
 | Attribute `data_store` is an enum with allowed values `standard`, `raw`. Got `high_volume`.                                                                                                                                                          | [`Object.vsdk_create_product_application__c.mdl`](tests/mdl_examples/scrapped/Vault-Java-SDK-Common-Services-Sample/Object.vsdk_create_product_application__c.mdl)    | [`Object.vsdk_create_product_application__c.mdl`](https://api.github.com/repos/veeva/vsdk-common-services-sample/git/blobs/31ab1fbc19a6f5da946e5b4245b75c629e0c78f5) |
 | Attribute `data_store` is an enum with allowed values `standard`, `raw`. Got `high_volume`.                                                                                                                                                          | [`Object.vsdk_product_application__c.mdl`](tests/mdl_examples/scrapped/Vault-Java-SDK-Common-Services-Sample/Object.vsdk_product_application__c.mdl)                  | [`Object.vsdk_product_application__c.mdl`](https://api.github.com/repos/veeva/vsdk-common-services-sample/git/blobs/31ab1fbc19a6f5da946e5b4245b75c629e0c78f5)        |
 | Attribute `data_store` is an enum with allowed values `standard`, `raw`. Got `high_volume`.                                                                                                                                                          | [`Object.vsdk_setting__c.mdl`](tests/mdl_examples/scrapped/vsdk-user-defined-model-sample-components/Object.vsdk_setting__c.mdl)                                      | [`Object.vsdk_setting__c.mdl`](https://api.github.com/repos/veeva/vsdk-user-defined-model-sample/git/blobs/50fce60d9ccf40912b18dcd238baa2fe9bc9ef22)                 |
+> Validation issues discovered in Veeva MDL files.
