@@ -1,7 +1,0 @@
-RECREATE Docfieldlayout vsdk_sample_section__c (
-   label('vSDK Sample Section'),
-   active(true),
-   icon(),
-   order(40),
-   fields('Docfield.vsdk_external_id__c')
-);

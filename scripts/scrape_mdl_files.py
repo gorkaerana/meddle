@@ -150,20 +150,30 @@ def main(out_dir: Path):
     )
     outdir_to_url = {}
     github_client = GithubClient(os.environ["GITHUB_TOKEN"])
+    # In order to avoid repeated files, we first downloaded MDL files from within
+    # VPK packages, and then loose MDL files not part of a VPK package
+    downloaded = set()
     for repo_metadata in user_repos("veeva", github_client):
         repo_url = repo_metadata["url"]
         for blob_metadata in repo_files(repo_url, github_client):
             path = blob_metadata["path"]
-            if path.endswith(".vpk"):
-                downloads = download_mdl_files_from_vpk(
-                    blob_metadata, github_client, out_dir
-                )
-                outdir_to_url.update(downloads)
-            elif path.endswith(".mdl"):
-                out_path, url = download_mdl_file(blob_metadata, github_client, out_dir)
-                outdir_to_url[out_path] = url
-            else:
+            downloaded.add(Path(path).name)
+            if not path.endswith(".vpk"):
                 continue
+            downloads = download_mdl_files_from_vpk(
+                blob_metadata, github_client, out_dir
+            )
+            outdir_to_url.update(downloads)
+
+    for repo_metadata in user_repos("veeva", github_client):
+        repo_url = repo_metadata["url"]
+        for blob_metadata in repo_files(repo_url, github_client):
+            path = blob_metadata["path"]
+            if not path.endswith(".mdl") or (Path(path).name in downloaded):
+                continue
+            out_path, url = download_mdl_file(blob_metadata, github_client, out_dir)
+            outdir_to_url[out_path] = url
+
     sources_path = out_dir / "source_urls.json"
     sources_path.write_text(json.dumps(outdir_to_url, indent=4))
     print(f"Wrote {sources_path}")

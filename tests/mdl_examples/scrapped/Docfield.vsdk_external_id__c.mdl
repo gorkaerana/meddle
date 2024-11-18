@@ -1,5 +1,0 @@
-ALTER Docfield vsdk_external_id__c (
-   label('vSDK External Id'),
-   shared(false),
-   defined_in('Doctype.vsdk_document__c')
-);
