@@ -6,7 +6,7 @@ from typing import Any, Callable, Generator, Iterable, Literal, TypeAlias, overl
 from lark import Lark, Transformer, Tree, Token
 import msgspec
 
-from mdl.validation import (
+from meddle.validation import (
     ValidationError,
     component_type_metadata,
     type_check_attribute,

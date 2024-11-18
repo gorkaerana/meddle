@@ -47,7 +47,7 @@ def term_definitions():
 
 @pytest.fixture
 def mdl_grammar_path(root_test_dir):
-    return root_test_dir.parent / "src" / "mdl" / "mdl_grammar.lark"
+    return root_test_dir.parent / "src" / "meddle" / "mdl_grammar.lark"
 
 
 @pytest.fixture

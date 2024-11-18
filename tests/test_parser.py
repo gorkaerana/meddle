@@ -3,8 +3,8 @@ import json
 import pytest
 import msgspec
 
-from mdl import Attribute, Component, Command
-from mdl.parser import parse_and_transform, ValidationError
+from meddle import Attribute, Component, Command
+from meddle.parser import parse_and_transform, ValidationError
 
 from conftest import path_name, scrapped_mdl_files, error_on_validation_mdl_files
 

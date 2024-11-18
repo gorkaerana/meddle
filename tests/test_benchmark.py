@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from mdl import Command
+from meddle import Command
 
 
 path_name = attrgetter("name")
