@@ -240,7 +240,7 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
   - `relationship_criteria` which has plenty of usage (as a quick grep in `tests/mdl_examples/scrapped` will show) but the attribute value is empty for every case.
 
 <table>
-<tr><th> Attributes with data type `SdkCode`, together with their components  </th><th> Attributes with data type `Expression`, together with their components </th></tr>
+<tr><th> Attributes with data type <em>SdkCode</em>, and their components  </th><th> Attributes with data type <em>Expression</em>, and their components </th></tr>
 <tr><td>
 
 | Component name | Attribute name |
