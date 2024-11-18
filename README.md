@@ -201,7 +201,7 @@ try:
         component_name="vmdml_options__c",
         attributes=[Attribute("label", 1)],
     ).validate()
-except ValidationError:
+except ValidationError as e: 
 	print(f"Ooopsie #2: {e}")
 ```
 

@@ -28,5 +28,10 @@ def root_test_dir():
 
 
 @pytest.fixture
+def project_root_dir(root_test_dir) -> Path:
+    return root_test_dir.parent
+
+
+@pytest.fixture
 def mdl_examples_dir(root_test_dir):
     return root_test_dir / "mdl_examples"

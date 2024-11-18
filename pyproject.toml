@@ -46,4 +46,5 @@ dev = [
     "py>=1.11.0",
     "types-beautifulsoup4>=4.12.0.20241020",
     "rich>=13.9.4",
+    "markdown-it-py>=3.0.0",
 ]
