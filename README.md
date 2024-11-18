@@ -236,7 +236,7 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
 
 - The attributes (and corresponding components) with data type `SdkCode` are listed in the table on the left below. No real world usage of any of them could be found.
 - The attributes (and corresponding components) with `Expression` data type are listed in the table on the right below. Real world usage examples could be found for only two of them:
-  - `formula` in [KANBAN-BOARD-CONFIG.vpk](https://github.com/veeva/Vault-Kanban-Board/blob/main/KANBAN-BOARD-CONFIG.vpk), which counters Veeva's documentation and does not enclose the attribute value in square brackets. See also [the scraped file](tests/mdl_examples/scrapped/KANBAN-BOARD-CONFIG/Object.access_request__c.mdl).
+  - `formula` in [KANBAN-BOARD-CONFIG.vpk](https://github.com/veeva/Vault-Kanban-Board/blob/main/KANBAN-BOARD-CONFIG.vpk), which counters Veeva's documentation and does not enclose the attribute value in square brackets. See also [the scraped file](tests/mdl_examples/scrapped/KANBAN-BOARD-CONFIG/Object.access_request__c.mdl#L363).
   - `relationship_criteria` which has plenty of usage (as a quick grep in `tests/mdl_examples/scrapped` will show) but the attribute value is empty in every case.
 
 <table>
