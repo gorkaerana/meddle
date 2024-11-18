@@ -27,7 +27,7 @@ COMPONENT_NAME_PATTERN = re.compile(r"^[A-Z][a-z]+$")
 
 
 def table_to_records(tag: Tag | NavigableString) -> list[Record]:
-    """Convert a `bs4.element.Tag` into tabular data format."""
+    """Convert a `bs4.element.Tag` representing an HTML table element into tabular data format."""
 
     # Pleasing mypy until further notice
     if not isinstance(tag, Tag):
@@ -80,9 +80,6 @@ def find_in_siblings_until(
 ) -> Generator[Tag | NavigableString]:
     """Iterate through siblings of `tag` (via its `find_next_sibling` method) and
     yield those flagged by `matcher`, until `breaker` signals an end.
-
-    The input variable of `breaker` is optional cause `bs4.element.Tag.find_next_sibling`
-    will return `None` when it cannot find any more siblings
     """
     next_tag = tag.find_next_sibling()
     while True:

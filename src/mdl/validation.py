@@ -1,7 +1,47 @@
+"""
+This file uses https://developer.veevavault.com/mdl/components/ to do type,
+constraint, etc. checking on MDL attribute values. The contents of above the link
+are scrapped via `scripts/scrape_components` and saved in `validation.json`.
+"""
+
 import json
 import re
 from pathlib import Path
 from typing import Any, Callable, Literal, TypeAlias, TypedDict
+
+
+# Type hint for the work-horse of `type_check_attribute`
+MatchTuple: TypeAlias = tuple[
+    # Wether the type of the attribute matches a Python built-in type
+    bool,
+    # Whether the type of the attribute is a generic reference to a component.
+    # See `is_generic_component_reference` below
+    bool,
+    # Whether the type of the attribute is a reference to a specific component.
+    # See `is_component_reference` below
+    bool,
+    # Whether the attribute is an enum type. See `is_enum` below
+    bool,
+    # Whether the attribute has multiple values. See `is_multi_value` below
+    bool,
+    # Whether the attribute type has constraints. See `ConstraintFunctions` and
+    # `CONSTRAINT_FUNCTIONS` below.
+    tuple[
+        tuple[Literal["maximum length"], re.Match | None],
+        tuple[Literal["minimum value"], re.Match | None],
+        tuple[Literal["maximum value"], re.Match | None],
+    ],
+]
+
+
+ConstraintFunctions = TypedDict(
+    "ConstraintFunctions",
+    {
+        "maximum length": Callable[[int], Callable[[list], bool]],
+        "minimum value": Callable[[int], Callable[[int], bool]],
+        "maximum value": Callable[[int], Callable[[int], bool]],
+    },
+)
 
 
 class ValidationError(Exception):
@@ -17,35 +57,13 @@ component_type_metadata: dict = json.loads(
 )
 
 
+# Miscellaneous patterns to match attribute value constraints
 TYPE_PATTERN = re.compile(r"Type : (.*)")
 ENUM_PATTERN = re.compile(r"Allowed values : (.*)", flags=re.MULTILINE)
 MULTI_VALUE_PATTERN = re.compile(r"Allows multiple values")
 MAX_LEN_PATTERN = re.compile(r"Maximum length : (.*)")
 MIN_VAL_PATTERN = re.compile(r"Minimum value : (.*)")
 MAX_VAL_PATTERN = re.compile(r"Maximum value : (.*)")
-
-
-MatchTuple: TypeAlias = tuple[
-    bool,
-    bool,
-    bool,
-    bool,
-    bool,
-    tuple[
-        tuple[Literal["maximum length"], re.Match | None],
-        tuple[Literal["minimum value"], re.Match | None],
-        tuple[Literal["maximum value"], re.Match | None],
-    ],
-]
-
-ConstraintFunctions = TypedDict(
-    "ConstraintFunctions",
-    {
-        "maximum length": Callable[[int], Callable[[list], bool]],
-        "minimum value": Callable[[int], Callable[[int], bool]],
-        "maximum value": Callable[[int], Callable[[int], bool]],
-    },
-)
 
 
 VEEVA_DOC_TO_PYTHON_TYPE = {
@@ -59,6 +77,10 @@ VEEVA_DOC_TO_PYTHON_TYPE = {
 
 
 def max_len_factory(bound: int) -> Callable[[list], bool]:
+    """A function factory for constraint checking an attribute value. It returns
+    a function checking whether the length of a list is less or equal than `bound`
+    """
+
     def inner(list_: list) -> bool:
         return len(list_) <= bound
 
@@ -66,6 +88,10 @@ def max_len_factory(bound: int) -> Callable[[list], bool]:
 
 
 def min_val_factory(bound: int) -> Callable[[int], bool]:
+    """A function factory for constraint checking an attribute value. It returns
+    a function checking whether a value is greater or equal than `bound`.
+    """
+
     def inner(value: int) -> bool:
         return value >= bound
 
@@ -73,12 +99,17 @@ def min_val_factory(bound: int) -> Callable[[int], bool]:
 
 
 def max_val_factory(bound: int) -> Callable[[int], bool]:
+    """A function factory for constraint checking an attribute value. It returns
+    a function checking whether a value is less or equal than `bound`.
+    """
+
     def inner(value: int) -> bool:
         return value <= bound
 
     return inner
 
 
+# A consolidation of constraint checking functions
 CONSTRAINT_FUNCTIONS: ConstraintFunctions = {
     "maximum length": max_len_factory,
     "minimum value": min_val_factory,
@@ -86,15 +117,11 @@ CONSTRAINT_FUNCTIONS: ConstraintFunctions = {
 }
 
 
-def is_enum(s: str | int) -> bool:
-    return ENUM_PATTERN.search(str(s)) is not None
-
-
-def is_multi_value(s: str | int) -> bool:
-    return MULTI_VALUE_PATTERN.search(str(s)) is not None
-
-
 def is_generic_component_reference(matched_type_name: str | int) -> bool:
+    """An attribute value can be a reference to another component, but the
+    documentation might not specify which component that is. This is a helper
+    method to check whether the match of `TYPE_PATTERN` is such a reference.
+    """
     return (
         (matched_type_name == "ComponentReference")
         or (matched_type_name == "SubcomponentReference")
@@ -103,6 +130,11 @@ def is_generic_component_reference(matched_type_name: str | int) -> bool:
 
 
 def is_component_reference(matched_type_name: str | int) -> bool:
+    """An attribute value can be a reference to a specific component. This is a
+    helper method to check whether the match of `TYPE_PATTERN` is such a reference,
+    and it does so by checking the match is specified as a component in
+    `validation.json`.
+    """
     return (
         # Is it a component type?
         (matched_type_name in component_type_metadata.keys())
@@ -114,13 +146,32 @@ def is_component_reference(matched_type_name: str | int) -> bool:
     )
 
 
+def is_enum(s: str | int) -> bool:
+    """A convenience wrapper to check whether an attribute is of type enum,
+    by checking its description matches `ENUM_PATTERN`.
+    """
+    return ENUM_PATTERN.search(str(s)) is not None
+
+
+def is_multi_value(s: str | int) -> bool:
+    """A convenience wrapper to check whether an attribute is multi-value,
+    by checking its description matches `MULTI_VALUE_PATTERN`.
+    """
+    return MULTI_VALUE_PATTERN.search(str(s)) is not None
+
+
 # Ideally we would pass the whole attribute, but type hinting it would cause
 # a circular import
 def type_check_attribute(name: str, value: Any, type_data: str):
+    """Type and constraint check an attribute `value` by fetching that sort of
+    information from `type_data`. `name` is necessary as the attribute value's
+    type and constraints depend on it.
+    """
     if value is None:
-        # All attribute values seem to be nullable.
-        # Plenty of examples under `tests/mdl_examples/scrapped`.
+        # All attribute values seem to be nullable. Find examples under
+        # `tests/mdl_examples/scrapped`.
         return True
+    # Fetch type and constraint metadata from `type_data` so we can match on it
     type_match = TYPE_PATTERN.search(type_data)
     assert (
         type_match is not None
@@ -134,6 +185,7 @@ def type_check_attribute(name: str, value: Any, type_data: str):
     )
     type_ = VEEVA_DOC_TO_PYTHON_TYPE.get(matched_type_name)
     is_type_supported = type_ is not None
+    # The work-horse of this function
     match_tuple: MatchTuple = (
         is_type_supported,
         is_generic_component_reference(matched_type_name),

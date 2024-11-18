@@ -21,10 +21,11 @@ class Unreachable(Exception):
 
 
 here = Path(__file__).parent
-mdl_grammar = (here / "mdl_grammar.lark").read_text()
+MDL_GRAMMAR = (here / "mdl_grammar.lark").read_text()
 
 
 def first_child_is_token(tree: Tree) -> bool:
+    """A small self-descriptive helper function."""
     return (len(tree.children) > 0) and isinstance(tree.children[0], Token)
 
 
@@ -61,7 +62,11 @@ def parse_and_transform(start: Literal["mdl_command"], source: str) -> "Command"
 
 
 def parse_and_transform(start: str, source: str):
-    parser = Lark(grammar=mdl_grammar, start=start, parser="lalr")
+    """Parse `source` using `lark.Lark` from starting symbol `start`, and
+    transformed the result tree with `MdlTreeTransformer`. Just a convenience
+    function.
+    """
+    parser = Lark(grammar=MDL_GRAMMAR, start=start, parser="lalr")
     parsed = parser.parse(source)
     transformer = MdlTreeTransformer(visit_tokens=True)
     transformed = transformer.transform(parsed)
@@ -72,15 +77,19 @@ AttributeValue: TypeAlias = bool | int | float | str
 
 
 class Attribute(msgspec.Struct):
+    """A data struct representing an attribute of a Veeva Vault component."""
+
     name: str
     value: AttributeValue | list[AttributeValue] | None = None
     command: str | None = None
 
     @classmethod
     def loads(cls, source: str) -> Attribute:
+        """Deserialize `source` into an `Attribute`."""
         return parse_and_transform("attribute", source)
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
+        """A private method containing the bulk of the serialization logic."""
         yield (INDENT * indent_level)
         yield self.name
         if self.command is not None:
@@ -106,6 +115,7 @@ class Attribute(msgspec.Struct):
         yield ")"
 
     def dumps(self):
+        """Serialize an `Attribute`."""
         return "".join(self.__parts__())
 
     def validate(
@@ -113,6 +123,9 @@ class Attribute(msgspec.Struct):
         metadata: dict,
         parent_component_type_name: str,
     ) -> bool:
+        """Validate the attribute represented by `self`, according to
+        https://developer.veevavault.com/mdl/components/
+        """
         attribute_metadata = metadata["attributes"].get(self.name)
         if attribute_metadata is None:
             options = ", ".join(repr(n) for n in metadata["attributes"].keys())
@@ -126,24 +139,32 @@ class Attribute(msgspec.Struct):
 
 
 class Component(msgspec.Struct):
+    """A data struct representing a Veeva Vault."""
+
     component_type_name: str
     component_name: str
     attributes: list[Attribute] | None = None
 
     @classmethod
     def loads(cls, source: str) -> Component:
+        """Deserialize `source` into a `Component`."""
         return parse_and_transform("component", source)
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
+        """A private method containing the bulk of the serialization logic."""
         yield f"{INDENT*indent_level}{self.component_type_name} {self.component_name} ("
         for a in self.attributes or []:
             yield "".join(a.__parts__(indent_level + 1))
         yield f"{INDENT*indent_level});"
 
     def dumps(self):
+        """Serialize a `Component`."""
         return "\n".join(self.__parts__())
 
     def validate(self, metadata: dict, parent_component_type_name: str) -> bool:
+        """Validate the component represented by `self`, according to
+        https://developer.veevavault.com/mdl/components/
+        """
         ctn = self.component_type_name
         component_metadata = metadata["subcomponents"].get(ctn)
         if component_metadata is None:
@@ -156,6 +177,8 @@ class Component(msgspec.Struct):
 
 
 class Command(msgspec.Struct):
+    """A data struct representing a Veeva Vault MDL command"""
+
     command: str
     component_type_name: str
     component_name: str
@@ -167,9 +190,11 @@ class Command(msgspec.Struct):
 
     @classmethod
     def loads(cls, source: str) -> Command:
+        """Deserialize `source` into a `Component`."""
         return parse_and_transform("mdl_command", source)
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
+        """A private method containing the bulk of the serialization logic."""
         first_line_start = (
             f"{INDENT * indent_level}"
             f"{self.command.upper()} "
@@ -194,6 +219,7 @@ class Command(msgspec.Struct):
             yield f"{INDENT * indent_level});"
 
     def dumps(self):
+        """Serialize a `Command`."""
         return "\n".join(self.__parts__())
 
     def validate(
@@ -201,6 +227,9 @@ class Command(msgspec.Struct):
         metadata: dict | None = None,
         parent_component_type_name: str | None = None,
     ) -> bool:
+        """Validate the MDL command represented by `self` according to
+        https://developer.veevavault.com/mdl/components/
+        """
         ctn = self.component_type_name
         metadata_: dict = component_type_metadata if metadata is None else metadata
         # Top-level command
@@ -224,8 +253,19 @@ class Command(msgspec.Struct):
         )
 
 
-def generic_command(command_name: str) -> Callable[[MdlTreeTransformer, Any], Command]:
+def command_node_processor_factory(
+    command_name: str,
+) -> Callable[[MdlTreeTransformer, Any], Command]:
+    """A function factory returning a method to be used to process a node of an MDL
+    command tree as parsed following `MDL_GRAMMAR`. The method processes a node
+    (and its children) corresponding to MDL command `command_name`, into a `Command`
+    struct in which argument `command` corresponds to `command_name`.
+    """
+
     def inner(self, children: Any) -> Command:
+        """Transform the `children` of an MDL command abstract syntax tree node
+        into a `Command`
+        """
         component_type_name_tree: Tree[Token]
         logical_operator: str | None
         component_name_tree: Tree[Token]
@@ -259,7 +299,7 @@ def generic_command(command_name: str) -> Callable[[MdlTreeTransformer, Any], Co
                 logical_operator = None
             case _:
                 raise Unreachable(f"Got children {children}")
-        # This assertion only exists to please `pyright`, notice how this is
+        # This assertion exists only to please `pyright`, notice how this is
         # checked for in both `match` cases above, via `first_child_is_token`.
         # For whichever reason `pyright` can't:
         # 1. Figure that out.
@@ -301,6 +341,10 @@ def generic_command(command_name: str) -> Callable[[MdlTreeTransformer, Any], Co
 
 
 class MdlTreeTransformer(Transformer):
+    """A class to transform an abstract syntax tree parsed as per `MDL_GRAMMAR`
+    into `Attribute`, `Component`, `Command`, etc.
+    """
+
     def xml(self, children) -> str:
         # TODO: support properly instead of just reading into a string
         assert len(children) == 1, "A 'xml' branch can only have a single children"
@@ -373,9 +417,9 @@ class MdlTreeTransformer(Transformer):
     def components(self, children) -> list[Component]:
         return children
 
-    create_command = generic_command("CREATE")
+    create_command = command_node_processor_factory("CREATE")
 
-    recreate_command = generic_command("RECREATE")
+    recreate_command = command_node_processor_factory("RECREATE")
 
     def drop_command(self, children) -> Command:
         component_type_name_tree, component_name_tree = children
@@ -394,11 +438,11 @@ class MdlTreeTransformer(Transformer):
             to_component_name=to_component_name_tree.children[0].value,
         )
 
-    add_command = generic_command("ADD")
+    add_command = command_node_processor_factory("ADD")
 
-    modify_command = generic_command("MODIFY")
+    modify_command = command_node_processor_factory("MODIFY")
 
-    alter_command = generic_command("ALTER")
+    alter_command = command_node_processor_factory("ALTER")
 
     def alter_subcommands(self, children) -> list[Command]:
         return children
