@@ -232,12 +232,12 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
 ## Limitations
 
 ### Unsupported data types
-`meddle` does not support [`SdkCode` and `Expression` attribute data types](https://developer.veevavault.com/mdl/#attributes-data-types), since no meaningful real world examples against which to test the tool could be found. More specifically:
+`meddle` does not fully support [`SdkCode` and `Expression` attribute data types](https://developer.veevavault.com/mdl/#attributes-data-types), in the sense that it does not map them to built-in Python types or bespoke Python objects. This is due to not having found any meaningful real world examples against which to test the tool. Find a more detailed background on each of the data types in the below list and tables. Issues and/or contributions in this space are most welcome :)
 
 - The attributes (and corresponding components) with data type `SdkCode` are listed in the table on the left below. No real world usage of any of them could be found.
 - The attributes (and corresponding components) with `Expression` data type are listed in the table on the right below. Real world usage examples could be found for only two of them:
   - `formula` in [KANBAN-BOARD-CONFIG.vpk](https://github.com/veeva/Vault-Kanban-Board/blob/main/KANBAN-BOARD-CONFIG.vpk), which counters Veeva's documentation and does not enclose the attribute value in square brackets. See also [the scraped file](tests/mdl_examples/scrapped/KANBAN-BOARD-CONFIG/Object.access_request__c.mdl).
-  - `relationship_criteria` which has plenty of usage (as a quick grep in `tests/mdl_examples/scrapped` will show) but the attribute value is empty for every case.
+  - `relationship_criteria` which has plenty of usage (as a quick grep in `tests/mdl_examples/scrapped` will show) but the attribute value is empty in every case.
 
 <table>
 <tr><th> Attributes with data type <code>SdkCode</code>, and their components  </th><th> Attributes with data type <code>Expression</code>, and their components </th></tr>
@@ -274,7 +274,7 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
 </td></tr> </table>
 
 ### Validation
-Some of the MDL examples available online disagree with Veeva's documentation, as per the below table. In such cases, `meddle.validation` follows the documentation.
+Some of the MDL examples available online disagree with Veeva's documentation, as per the below table. In such cases, `meddle` follows the documentation.
 | Reason | Source (in this repo) | Source (URL) | 
 |---|---|---|
 | Attribute name `overlay` is not allowed under component type `Doclifecyclestate`. Options are: `label`, `active`, `description`, `order`, `cancel_state`, `skip_cancel_state`, `entry_criteria`, `entry_action`, `user_action`, `security_settings`. | [`Doclifecycle.vsdk_document_lifecycle__c.mdl`](tests/mdl_examples/scrapped/Base_vsdk-document-sample-components/Doclifecycle.vsdk_document_lifecycle__c.mdl)         | [`Doclifecycle.vsdk_document_lifecycle__c.mdl`](https://api.github.com/repos/veeva/vsdk-document-sample/git/blobs/15ccd5244ddf93a7dfa32e6828d1e06fbd235127)          |
