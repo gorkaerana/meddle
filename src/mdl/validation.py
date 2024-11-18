@@ -206,13 +206,6 @@ def type_check_attribute(name: str, value: Any, type_data: str):
                     raise ValidationError(
                         f"Attribute {repr(name)} is {'a multi-value' if multi_value else 'an'} enum with allowed values {', '.join(repr(v) for v in allowed_values)}. Got {repr(e)}."
                     )
-        # Generic non-enum: single and multi-value
-        case (True, False, False, False, multi_value, _):
-            for e in value if isinstance(value, list) else [value]:
-                if type(e) is not type_:
-                    raise ValidationError(
-                        f"Attribute {repr(name)} {'is a multi-value and' if multi_value else ''} ought to be of type {repr(matched_type_name)}. Got {repr(e)} which is of type {repr(type(e))}."
-                    )
         # Constraints
         case (True, False, False, False, False, constraints) if any(
             m is not None for _, m in constraints
@@ -220,11 +213,22 @@ def type_check_attribute(name: str, value: Any, type_data: str):
             for k, match_ in constraints:
                 if match_ is None:
                     continue
+                if type(value) is not type_:
+                    raise ValidationError(
+                        f"Attribute {repr(name)} ought to be of type {repr(matched_type_name)}. Got {repr(value)} which is of type {repr(type(value))}."
+                    )
                 bound = int(match_.groups(0)[0])
                 f = CONSTRAINT_FUNCTIONS[k](bound)
                 if not f(value):
                     raise ValidationError(
                         f"Attribute {repr(name)} is constrained to {k} {bound}. Got {repr(value)}."
+                    )
+        # Generic non-enum: single and multi-value
+        case (True, False, False, False, multi_value, _):
+            for e in value if isinstance(value, list) else [value]:
+                if type(e) is not type_:
+                    raise ValidationError(
+                        f"Attribute {repr(name)} {'is a multi-value and' if multi_value else ''} ought to be of type {repr(matched_type_name)}. Got {repr(e)} which is of type {repr(type(e))}."
                     )
         # Multi-value reference to other components
         case (False, False, True, False, True, _):
