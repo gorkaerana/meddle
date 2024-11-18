@@ -7,10 +7,10 @@ from mdl import Command
 
 
 path_name = attrgetter("name")
-# "ADD" and "MODIFY" commands are only allowed as subcommands under
-# "ALTER" MDL command
+here = Path(__file__).parent
+scrapped_mdl_dir = here / "mdl_examples" / "scrapped"
 mdl_files = sorted(
-    (Path(__file__).parent / "mdl_examples" / "scrapped").rglob("*.mdl"),
+    scrapped_mdl_dir.rglob("*.mdl"),
     key=path_name,
 )
 

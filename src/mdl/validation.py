@@ -95,8 +95,10 @@ def is_multi_value(s: str | int) -> bool:
 
 
 def is_generic_component_reference(matched_type_name: str | int) -> bool:
-    return (matched_type_name == "ComponentReference") or (
-        matched_type_name == "SubcomponentReference"
+    return (
+        (matched_type_name == "ComponentReference")
+        or (matched_type_name == "SubcomponentReference")
+        or matched_type_name == "Subcomponent"
     )
 
 

@@ -1,11 +1,12 @@
-# TODO: test 'alter_subcommand' and 'alter_subcommands' rules
 import json
 
 import pytest
 import msgspec
 
 from mdl import Attribute, Component, Command
-from mdl.parser import parse_and_transform
+from mdl.parser import parse_and_transform, ValidationError
+
+from conftest import path_name, scrapped_mdl_files, error_on_validation_mdl_files
 
 
 @pytest.fixture
@@ -446,3 +447,23 @@ def test_mdl_command(mdl, json, request, mdl_command_parser):
     assert mdl_command_parser(request.getfixturevalue(mdl)) == msgspec.json.decode(
         request.getfixturevalue(json), type=Command
     )
+
+
+@pytest.mark.parametrize("path", scrapped_mdl_files, ids=path_name)
+def test_loads(path):
+    Command.loads(path.read_text())
+    assert True
+
+
+@pytest.mark.parametrize(
+    "path", scrapped_mdl_files - error_on_validation_mdl_files, ids=path_name
+)
+def test_validation(path):
+    command = Command.loads(path.read_text())
+    assert command.validate()
+
+
+@pytest.mark.parametrize("path", error_on_validation_mdl_files, ids=path_name)
+def test_error_on_validaton(path):
+    with pytest.raises(ValidationError):
+        Command.loads(path.read_text()).validate()
