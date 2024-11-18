@@ -26,7 +26,7 @@ Picklistentry hello_world__c(
 rpprint(recreate_command)
 ```
 
-yields
+which yields
 
 ```bash
 Command(
@@ -97,25 +97,28 @@ assert alter_command_copy == alter_command
 
 Say we are only interested in 
 
-- attribute `label` of `recreate_command`,
-- attribute `label` of `alter_command`, and
-- attribute `value` within the `MODIFY` subcommand of `alter_command`.
+- Attribute `label` of `recreate_command`--the line containing `label('vMDL Options')`.
+- Attribute `label` of `alter_command`--the line also containing `label('vMDL Options')`.
+- attribute `value` within the `MODIFY` subcommand of `alter_command`--the line containing `value('Hello World.')`.
 
 We can manually delete any entries we are not interested in
 ```python
 del recreate_command_copy.components[0]
 del recreate_command_copy.attributes[1]
-rpprint(recreate_command_copy)
 
 del alter_command_copy.commands[0].attributes[-1]
 del alter_command_copy.commands[-1]
-rpprint(recreate_command_copy)
+
+assert recreate_command_copy != recreate_command
+assert alter_command_copy != alter_command
 ```
 
 Alternatively, and perhaps in a more programmable way
 
 ```python
-recreate_command_copy.attributes = [attr for attr in recreate_command.attributes if attr.name == "label"]
+recreate_command_copy.attributes = [
+	attr for attr in recreate_command.attributes if attr.name == "label"
+]
 recreate_command_copy.components = []
 
 alter_command_copy.commands = [
@@ -126,15 +129,18 @@ alter_command_copy.commands = [
 alter_command_copy.commands[0].attributes = [
     attr for attr in alter_command_copy.attributes if attr.name == "value"
 ]
+
+assert recreate_command_copy != recreate_command
+assert alter_command_copy != alter_command
 ```
 
 ### Writing
 If we wanted to write our modified commands
 
 ```python
-print(recreate_command_copy)
+print(recreate_command_copy.dumps())
 print()
-print(alter_command_copy)
+print(alter_command_copy.dumps())
 ```
 
 results in 
@@ -205,7 +211,7 @@ except ValidationError as e:
 	print(f"Ooopsie #2: {e}")
 ```
 
-`meddle` very raises this issues for us.
+`meddle` conveniently raises this issues for us.
 
 ```bash
 Ooopsie #1: Attribute 'label' is constrained to maximum length 40. Got 'This is a long string longer than the maximum allowed length of 40'.

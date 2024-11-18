@@ -41,6 +41,7 @@ def python_executable(project_root_dir):
 
 
 def test_readme_python_code_chunks(python_executable, readme_executable_file):
-    print([python_executable, readme_executable_file])
-    process = subprocess.run([python_executable, readme_executable_file])
+    process = subprocess.run(
+        [python_executable, readme_executable_file], capture_output=True
+    )
     assert process.returncode == 0
