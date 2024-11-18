@@ -239,6 +239,10 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
   - `formula` in [KANBAN-BOARD-CONFIG.vpk](https://github.com/veeva/Vault-Kanban-Board/blob/main/KANBAN-BOARD-CONFIG.vpk), which counters Veeva's documentation and does not enclose the attribute value in square brackets. See also [the scraped file](tests/mdl_examples/scrapped/KANBAN-BOARD-CONFIG/Object.access_request__c.mdl).
   - `relationship_criteria` which has plenty of usage (as a quick grep in `tests/mdl_examples/scrapped` will show) but the attribute value is empty for every case.
 
+<table>
+<tr><th> Attributes with data type `SdkCode`, together with their components  </th><th> Attributes with data type `Expression`, together with their components </th></tr>
+<tr><td>
+
 | Component name | Attribute name |
 |---|---|
 | `Customwebapi` | `source_code` |
@@ -256,6 +260,8 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
 | `Userdefinedmodel` | `source_code` |
 | `Userdefinedservice` | `source_code` |
 
+</td><td>
+
 | Component name | Attribute name |
 |---|---|
 | `Docfield` | `formula` |
@@ -264,6 +270,8 @@ Ooopsie #2: Attribute 'label' ought to be of type 'String'. Got 1 which is of ty
 | `Field` | `relationship_criteria` |
 | `Typefield` | `relationship_criteria` |
 | `Sharingrule` | `criteria` |
+
+</td></tr> </table>
 
 ### Validation
 Some of the MDL examples available online disagree with Veeva's documentation, as per the below table. In such cases, `meddle.validation` follows the documentation.
