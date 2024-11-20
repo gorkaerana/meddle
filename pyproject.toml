@@ -28,10 +28,10 @@ allow-direct-references = true
 packages = ["src/meddle"]
 
 [tool.mypy]
-exclude = [".venv", "tests"]
+exclude = [".venv"]
 
 [tool.pyright]
-ignore = [".venv", "tests"]
+ignore = [".venv"]
 
 [dependency-groups]
 dev = [
