@@ -467,3 +467,195 @@ def test_validation(path):
 def test_error_on_validaton(path):
     with pytest.raises(ValidationError):
         Command.loads(path.read_text()).validate()
+
+
+@pytest.mark.parametrize(
+    "value,attribute",
+    [
+        (True, Attribute("active", True)),
+        ("field1", Attribute("fields", ["field1", "field2"])),
+        (["field1", "field2"], Attribute("fields", ["field1", "field2"])),
+        (["field1", "field2"], Attribute("fields", ["field1", "field2"])),
+    ],
+)
+def test_Attribute___contains__(value, attribute):
+    assert value in attribute
+
+
+@pytest.mark.parametrize(
+    "value,attribute",
+    [
+        (["field1", "field2"], Attribute("fields", ["field1", "field2", "field3"])),
+    ],
+)
+def test_Attribute___contains___negative(value, attribute):
+    assert value not in attribute
+
+
+@pytest.mark.parametrize(
+    "value,component",
+    [
+        (
+            Attribute("active", True),
+            Component(
+                "Accountmessage", "my_acount_message__c", [Attribute("active", True)]
+            ),
+        ),
+        (
+            Attribute("fields", ["field1", "field2"]),
+            Component(
+                "Accountmessage",
+                "my_acount_message__c",
+                [Attribute("fields", ["field1", "field2"])],
+            ),
+        ),
+    ],
+)
+def test_Component___contains__(value, component):
+    assert value in component
+
+
+@pytest.mark.parametrize(
+    "value,component",
+    [
+        (
+            True,
+            Component(
+                "Accountmessage", "my_acount_message__c", [Attribute("active", True)]
+            ),
+        ),
+        (
+            1,
+            Component(
+                "Accountmessage", "my_acount_message__c", [Attribute("active", True)]
+            ),
+        ),
+        (
+            None,
+            Component(
+                "Accountmessage",
+                "my_acount_message__c",
+                [Attribute("fields", ["field1", "field2"])],
+            ),
+        ),
+    ],
+)
+def test_Component___contains___negative(value, component):
+    assert value not in component
+
+
+@pytest.mark.parametrize(
+    "value,component",
+    [
+        (
+            Attribute("active", True),
+            Command(
+                "ALTER",
+                "Accountmessage",
+                "my_acount_message__c",
+                [Attribute("active", True)],
+                [
+                    Component(
+                        "Accountmessage",
+                        "my_acount_message__c",
+                        [Attribute("active", True)],
+                    )
+                ],
+                [
+                    Command(
+                        "RENAME",
+                        "Accountmessage",
+                        "my_account_message__c",
+                        to_component_name="your_account_message__c",
+                    )
+                ],
+            ),
+        ),
+        (
+            Component(
+                "Accountmessage", "my_acount_message__c", [Attribute("active", True)]
+            ),
+            Command(
+                "ALTER",
+                "Accountmessage",
+                "my_acount_message__c",
+                [Attribute("active", True)],
+                [
+                    Component(
+                        "Accountmessage",
+                        "my_acount_message__c",
+                        [Attribute("active", True)],
+                    )
+                ],
+                [
+                    Command(
+                        "RENAME",
+                        "Accountmessage",
+                        "my_account_message__c",
+                        to_component_name="your_account_message__c",
+                    )
+                ],
+            ),
+        ),
+        (
+            Command(
+                "RENAME",
+                "Accountmessage",
+                "my_account_message__c",
+                to_component_name="your_account_message__c",
+            ),
+            Command(
+                "ALTER",
+                "Accountmessage",
+                "my_acount_message__c",
+                [Attribute("active", True)],
+                [
+                    Component(
+                        "Accountmessage",
+                        "my_acount_message__c",
+                        [Attribute("active", True)],
+                    )
+                ],
+                [
+                    Command(
+                        "RENAME",
+                        "Accountmessage",
+                        "my_account_message__c",
+                        to_component_name="your_account_message__c",
+                    )
+                ],
+            ),
+        ),
+    ],
+)
+def test_Command___contains__(value, component):
+    assert value in component
+
+
+@pytest.mark.parametrize(
+    "value,component",
+    [
+        (
+            True,
+            Component(
+                "Accountmessage", "my_acount_message__c", [Attribute("active", True)]
+            ),
+        ),
+        (
+            1,
+            Component(
+                "Accountmessage", "my_acount_message__c", [Attribute("active", True)]
+            ),
+        ),
+        (
+            None,
+            Component(
+                "Accountmessage",
+                "my_acount_message__c",
+                [Attribute("fields", ["field1", "field2"])],
+            ),
+        ),
+    ],
+)
+def test_Command___contains___negative(value, component):
+    assert value not in component

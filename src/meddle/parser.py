@@ -88,6 +88,13 @@ class Attribute(msgspec.Struct):
         """Deserialize `source` into an `Attribute`."""
         return parse_and_transform("attribute", source)
 
+    def __contains__(self, other) -> bool:
+        return (
+            (isinstance(other, list) and (other == self.value))
+            or (isinstance(self.value, list) and (other in self.value))
+            or (other == self.value)
+        )
+
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         """A private method containing the bulk of the serialization logic."""
         yield (INDENT * indent_level)
@@ -150,6 +157,11 @@ class Component(msgspec.Struct):
         """Deserialize `source` into a `Component`."""
         return parse_and_transform("component", source)
 
+    def __contains__(self, other) -> bool:
+        return isinstance(other, Attribute) and (
+            (self.attributes is not None) and (other in self.attributes)
+        )
+
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         """A private method containing the bulk of the serialization logic."""
         yield f"{INDENT*indent_level}{self.component_type_name} {self.component_name} ("
@@ -192,6 +204,22 @@ class Command(msgspec.Struct):
     def loads(cls, source: str) -> Command:
         """Deserialize `source` into a `Component`."""
         return parse_and_transform("mdl_command", source)
+
+    def __contains__(self, other) -> bool:
+        return (
+            (
+                isinstance(other, Attribute)
+                and ((self.attributes is not None) and (other in self.attributes))
+            )
+            or (
+                isinstance(other, Component)
+                and ((self.components is not None) and (other in self.components))
+            )
+            or (
+                isinstance(other, Command)
+                and ((self.commands is not None) and (other in self.commands))
+            )
+        )
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         """A private method containing the bulk of the serialization logic."""
