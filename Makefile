@@ -1,25 +1,25 @@
 mypy:
-	mypy .
+	uv run mypy .
 
 pyright:
-	pyright .
+	uv run pyright .
 
 type_check: mypy pyright
 
 format:
-	ruff format
+	uv run ruff format
 
 lint:
-	ruff check
+	uv run ruff check
 
 # qc = quality control
 qc: format lint type_check
 
 install_dev:
-	uv sync
+	uv sync --all-groups
 
 test:
-	pytest tests/test_mdl_grammar.py tests/test_parser.py tests/test_readme.py --workers auto
+	uv run pytest tests/test_mdl_grammar.py tests/test_parser.py tests/test_readme.py --workers auto
 
 benchmark:
-	pytest tests/test_benchmark.py
+	uv run pytest tests/test_benchmark.py

@@ -1,10 +1,10 @@
 from __future__ import annotations
 from collections import deque
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Generator, Iterable, Literal, TypeAlias, overload
 
 from lark import Lark, Transformer, Tree, Token
-import msgspec
 
 from meddle.validation import (
     ValidationError,
@@ -76,7 +76,8 @@ def parse_and_transform(start: str, source: str):
 AttributeValue: TypeAlias = bool | int | float | str
 
 
-class Attribute(msgspec.Struct):
+@dataclass
+class Attribute:
     """A data struct representing an attribute of a Veeva Vault component."""
 
     name: str
@@ -145,7 +146,8 @@ class Attribute(msgspec.Struct):
         )
 
 
-class Component(msgspec.Struct):
+@dataclass
+class Component:
     """A data struct representing a Veeva Vault."""
 
     component_type_name: str
@@ -188,7 +190,8 @@ class Component(msgspec.Struct):
         return all(a.validate(component_metadata, ctn) for a in self.attributes or [])
 
 
-class Command(msgspec.Struct):
+@dataclass
+class Command:
     """A data struct representing a Veeva Vault MDL command"""
 
     command: str
