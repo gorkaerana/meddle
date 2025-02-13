@@ -467,3 +467,15 @@ def test_validation(path):
 def test_error_on_validaton(path):
     with pytest.raises(ValidationError):
         Command.loads(path.read_text()).validate()
+
+
+def test_Component___contains__():
+    assert Attribute("order", 1) in Component(
+        "", "", [Attribute("order", 1), Attribute("label", "a label")]
+    )
+
+
+def test_Command___contains__():
+    assert Attribute("order", 1) in Component(
+        "", "", [Attribute("order", 1), Attribute("label", "a label")]
+    )
