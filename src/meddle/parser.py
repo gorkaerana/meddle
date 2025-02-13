@@ -166,8 +166,8 @@ class Component(msgspec.Struct):
         return parse_and_transform("component", source)
 
     def __contains__(self, other) -> bool:
-        return isinstance(other, Attribute) and any(
-            a == other for a in self.attributes or []
+        return isinstance(other, Attribute) and (
+            (self.attributes is not None) and (other in self.attributes)
         )
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
@@ -217,15 +217,15 @@ class Command(msgspec.Struct):
         return (
             (
                 isinstance(other, Attribute)
-                and any(a == other for a in self.attributes or [])
+                and ((self.attributes is not None) and (other in self.attributes))
             )
             or (
                 isinstance(other, Component)
-                and any(a == other for a in self.components or [])
+                and ((self.components is not None) and (other in self.components))
             )
             or (
                 isinstance(other, Command)
-                and any(a == other for a in self.commands or [])
+                and ((self.commands is not None) and (other in self.commands))
             )
         )
 
