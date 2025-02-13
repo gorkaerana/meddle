@@ -88,6 +88,21 @@ class Attribute(msgspec.Struct):
         """Deserialize `source` into an `Attribute`."""
         return parse_and_transform("attribute", source)
 
+    def __contains__(self, other) -> bool:
+        return isinstance(other, AttributeValue | list | None) and (
+            (other == self.value)
+            # Both `self.value` and `other` are lists
+            or (
+                isinstance(other, list)
+                and isinstance(self.value, list)
+                and all(e in self.value for e in other)
+            )
+            # Only `self.value` is a list
+            or (isinstance(self.value, list) and (other in self.value))
+            # No need to check when only `other` is a list: a list being
+            # contained in a non-list does not make sense
+        )
+
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         """A private method containing the bulk of the serialization logic."""
         yield (INDENT * indent_level)
@@ -150,6 +165,11 @@ class Component(msgspec.Struct):
         """Deserialize `source` into a `Component`."""
         return parse_and_transform("component", source)
 
+    def __contains__(self, other) -> bool:
+        return isinstance(other, Attribute) and any(
+            a == other for a in self.attributes or []
+        )
+
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         """A private method containing the bulk of the serialization logic."""
         yield f"{INDENT*indent_level}{self.component_type_name} {self.component_name} ("
@@ -192,6 +212,22 @@ class Command(msgspec.Struct):
     def loads(cls, source: str) -> Command:
         """Deserialize `source` into a `Component`."""
         return parse_and_transform("mdl_command", source)
+
+    def __contains__(self, other) -> bool:
+        return (
+            (
+                isinstance(other, Attribute)
+                and any(a == other for a in self.attributes or [])
+            )
+            or (
+                isinstance(other, Component)
+                and any(a == other for a in self.components or [])
+            )
+            or (
+                isinstance(other, Command)
+                and any(a == other for a in self.commands or [])
+            )
+        )
 
     def __parts__(self, indent_level: int = 0) -> Generator[str]:
         """A private method containing the bulk of the serialization logic."""
